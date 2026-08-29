@@ -1,0 +1,2064 @@
+[
+  {
+    "id": 1,
+    "category": "应急维修",
+    "subCategory": "险",
+    "problem": "墙面严重倾斜",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "结构加固资质"
+    ],
+    "target_dept_semantic": "结构维修组",
+    "description": "房屋墙体出现明显倾斜，存在结构安全隐患",
+    "trigger_keywords": [
+      "墙面倾斜",
+      "墙体歪了",
+      "墙斜了",
+      "房屋倾斜",
+      "墙体变形",
+      "承重墙倾斜",
+      "墙面歪斜"
+    ],
+    "trigger_location": [
+      "室内墙体",
+      "承重墙",
+      "外墙",
+      "房屋整体"
+    ]
+  },
+  {
+    "id": 2,
+    "category": "应急维修",
+    "subCategory": "险",
+    "problem": "扶手松动",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "结构加固资质"
+    ],
+    "target_dept_semantic": "结构维修组",
+    "description": "楼梯或阳台的扶手固定不牢固，有脱落风险，特别是二楼及以上高度的扶手损坏",
+    "trigger_keywords": [
+      "扶手松动",
+      "扶手摇晃",
+      "楼梯扶手不稳",
+      "阳台扶手松",
+      "扶手脱落",
+      "扶手固定不牢",
+      "二楼扶手坏",
+      "扶手脱落风险",
+      "扶手有安全隐患"
+    ],
+    "trigger_location": [
+      "楼梯",
+      "阳台",
+      "走廊",
+      "室外台阶",
+      "二楼"
+    ]
+  },
+  {
+    "id": 3,
+    "category": "应急维修",
+    "subCategory": "险",
+    "problem": "楼地板、扶梯踏步断裂",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "结构加固资质"
+    ],
+    "target_dept_semantic": "结构维修组",
+    "description": "楼层地板或楼梯台阶出现断裂损坏",
+    "trigger_keywords": [
+      "地板断裂",
+      "楼梯踏步断裂",
+      "楼板开裂",
+      "地面断裂",
+      "踏步裂了",
+      "地板塌陷",
+      "楼板裂缝"
+    ],
+    "trigger_location": [
+      "楼层地板",
+      "楼梯踏步",
+      "走廊地面",
+      "阳台地面"
+    ]
+  },
+  {
+    "id": 4,
+    "category": "应急维修",
+    "subCategory": "险",
+    "problem": "平顶粉刷层大面积脱落",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "结构加固资质"
+    ],
+    "target_dept_semantic": "结构维修组",
+    "description": "天花板粉饰层大面积脱落，有坠落危险",
+    "trigger_keywords": [
+      "天花板脱落",
+      "粉刷层脱落",
+      "顶面掉皮",
+      "石灰层掉落",
+      "天花板起鼓",
+      "顶面剥落"
+    ],
+    "trigger_location": [
+      "室内天花板",
+      "走廊顶面",
+      "大厅顶面"
+    ]
+  },
+  {
+    "id": 5,
+    "category": "应急维修",
+    "subCategory": "险",
+    "problem": "外立面大面积起壳脱落",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "结构加固资质"
+    ],
+    "target_dept_semantic": "结构维修组",
+    "description": "建筑外墙表面装饰层大面积起壳、脱落",
+    "trigger_keywords": [
+      "外墙起壳",
+      "外墙皮脱落",
+      "外立面掉皮",
+      "墙面起泡",
+      "外墙砖脱落",
+      "外墙装饰层脱落"
+    ],
+    "trigger_location": [
+      "建筑外墙",
+      "阳台外墙",
+      "立面"
+    ]
+  },
+  {
+    "id": 6,
+    "category": "应急维修",
+    "subCategory": "险",
+    "problem": "房屋结构性损坏",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "结构加固资质"
+    ],
+    "target_dept_semantic": "结构维修组",
+    "description": "房屋主体结构（梁、柱、承重墙）出现损坏",
+    "trigger_keywords": [
+      "结构损坏",
+      "梁开裂",
+      "柱子裂缝",
+      "承重墙裂缝",
+      "房屋开裂",
+      "主体结构问题",
+      "结构变形"
+    ],
+    "trigger_location": [
+      "承重墙",
+      "梁",
+      "柱",
+      "房屋基础"
+    ]
+  },
+  {
+    "id": 7,
+    "category": "应急维修",
+    "subCategory": "急修",
+    "problem": "断电",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "整个区域或多个住户同时停电",
+    "trigger_keywords": [
+      "断电",
+      "停电",
+      "没电",
+      "全楼停电",
+      "区域停电",
+      "电闸跳了",
+      "整栋没电",
+      "多户停电"
+    ],
+    "trigger_location": [
+      "整栋楼",
+      "片区",
+      "楼层",
+      "配电室"
+    ]
+  },
+  {
+    "id": 8,
+    "category": "应急维修",
+    "subCategory": "急修",
+    "problem": "电梯困人",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "电梯维修证"
+    ],
+    "target_dept_semantic": "电梯维修组",
+    "description": "电梯发生故障，人员被困在轿厢内，明确指出有人员被关在内",
+    "trigger_keywords": [
+      "电梯困人",
+      "被困电梯",
+      "电梯关人",
+      "电梯停了有人",
+      "电梯打不开有人",
+      "轿厢里有人"
+    ],
+    "trigger_location": [
+      "电梯轿厢"
+    ]
+  },
+  {
+    "id": 9,
+    "category": "应急维修",
+    "subCategory": "漏",
+    "problem": "屋顶漏水",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "防水工证"
+    ],
+    "target_dept_semantic": "防水维修组",
+    "description": "建筑物屋顶出现漏水现象，包括阳台顶部漏水",
+    "trigger_keywords": [
+      "屋顶漏水",
+      "顶楼滴水",
+      "屋顶积水",
+      "防水层破损",
+      "阳台漏水",
+      "漏得厉害",
+      "天花板水柱往下流",
+      "滴滴答答漏水不停",
+      "外墙正在滴水",
+      "外墙漏水不停"
+    ],
+    "trigger_location": [
+      "屋顶",
+      "顶层天花板",
+      "檐口",
+      "阳台"
+    ]
+  },
+  {
+    "id": 10,
+    "category": "应急维修",
+    "subCategory": "漏",
+    "problem": "外墙渗水",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "防水工证"
+    ],
+    "target_dept_semantic": "防水维修组",
+    "description": "建筑外墙出现渗水，导致室内潮湿，包括阳台外墙渗水",
+    "trigger_keywords": [
+      "外墙渗水",
+      "外墙漏水",
+      "窗户周边渗水",
+      "外墙保温层渗水",
+      "阳台外墙渗水",
+      "阳台外墙漏水",
+      "外墙正在流水",
+      "外墙大量渗水",
+      "外墙面正在漏水",
+      "外墙大幅渗水"
+    ],
+    "trigger_location": [
+      "外墙",
+      "窗户周边",
+      "阳台外墙"
+    ]
+  },
+  {
+    "id": 11,
+    "category": "应急维修",
+    "subCategory": "堵",
+    "problem": "下水管道泛水",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "下水管道堵塞或回流，导致污水上涌",
+    "trigger_keywords": [
+      "下水道堵了",
+      "下水管道反水",
+      "污水外溢",
+      "地漏冒水",
+      "下水不通",
+      "下水管道泛水",
+      "厨房水斗泛水",
+      "窨井泛水",
+      "窨井堵塞返水"
+    ],
+    "trigger_location": [
+      "下水道",
+      "卫生间地漏",
+      "厨房水槽",
+      "阳台地漏"
+    ]
+  },
+  {
+    "id": 12,
+    "category": "应急维修",
+    "subCategory": "堵",
+    "problem": "污水管道泛水",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "污水管道堵塞或回流，导致污水上涌",
+    "trigger_keywords": [
+      "污水管堵",
+      "粪水反涌",
+      "马桶泛水",
+      "污水外冒",
+      "排污管堵塞",
+      "窨井堵塞泛水",
+      "窨井满溢",
+      "窨井溢水",
+      "污水外溢"
+    ],
+    "trigger_location": [
+      "卫生间马桶",
+      "污水管道",
+      "化粪池"
+    ]
+  },
+  {
+    "id": 13,
+    "category": "应急维修",
+    "subCategory": "堵",
+    "problem": "阳台管道泛水",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "阳台区域的排水管道堵塞或泛水",
+    "trigger_keywords": [
+      "阳台地漏堵",
+      "阳台积水",
+      "阳台排水不畅",
+      "阳台管道反水"
+    ],
+    "trigger_location": [
+      "阳台地漏",
+      "阳台排水管"
+    ]
+  },
+  {
+    "id": 14,
+    "category": "应急维修",
+    "subCategory": "水",
+    "problem": "断水",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "整个区域或多个住户同时停水",
+    "trigger_keywords": [
+      "停水",
+      "断水",
+      "没水",
+      "全楼停水",
+      "区域停水",
+      "水压为零",
+      "水龙头不出水",
+      "独户断水",
+      "家中无水",
+      "没水了"
+    ],
+    "trigger_location": [
+      "整栋楼",
+      "片区",
+      "楼层",
+      "水泵房"
+    ]
+  },
+  {
+    "id": 15,
+    "category": "应急维修",
+    "subCategory": "水",
+    "problem": "室内水管爆裂",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "室内自来水管道发生破裂，大量漏水",
+    "trigger_keywords": [
+      "水管爆了",
+      "水管爆裂喷水",
+      "室内喷水",
+      "自来水泄露",
+      "水管断裂",
+      "水漫金山",
+      "大量漏水"
+    ],
+    "trigger_location": [
+      "室内厨房",
+      "卫生间",
+      "阳台",
+      "水管管道"
+    ]
+  },
+  {
+    "id": 16,
+    "category": "应急维修",
+    "subCategory": "水",
+    "problem": "水泵故障",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "机电维修资质"
+    ],
+    "target_dept_semantic": "机电维修组",
+    "description": "供水系统的水泵设备发生故障",
+    "trigger_keywords": [
+      "水泵不工作",
+      "水泵异响",
+      "水泵跳闸",
+      "供水压力不足",
+      "水泵漏水",
+      "水泵电机烧",
+      "水泵坏了",
+      "水泵故障"
+    ],
+    "trigger_location": [
+      "水泵房",
+      "地下室",
+      "水箱间"
+    ]
+  },
+  {
+    "id": 17,
+    "category": "应急维修",
+    "subCategory": "水",
+    "problem": "屋顶水箱损坏",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "屋顶储水箱设备发生故障，影响供水",
+    "trigger_keywords": [
+      "水箱没水",
+      "水箱漏水",
+      "水箱浮球阀坏",
+      "水箱溢流",
+      "水箱进水阀故障"
+    ],
+    "trigger_location": [
+      "屋顶水箱",
+      "水箱间"
+    ]
+  },
+  {
+    "id": 18,
+    "category": "应急维修",
+    "subCategory": "水",
+    "problem": "龙头严重漏水",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "水龙头损坏，无法关闭或严重漏水",
+    "trigger_keywords": [
+      "水龙头漏水",
+      "龙头关不紧",
+      "水龙头喷水",
+      "阀门坏了",
+      "水龙头关不住",
+      "水龙头直喷",
+      "水龙头一直漏水",
+      "龙头关不住了"
+    ],
+    "trigger_location": [
+      "厨房水槽",
+      "卫生间洗手盆",
+      "阳台水龙头"
+    ]
+  },
+  {
+    "id": 19,
+    "category": "应急维修",
+    "subCategory": "水",
+    "problem": "水管冻裂",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "冬季低温导致水管冻结破裂",
+    "trigger_keywords": [
+      "水管冻裂",
+      "水管结冰",
+      "冬季水管爆",
+      "冰冻漏水",
+      "室外水管冻"
+    ],
+    "trigger_location": [
+      "室外水管",
+      "阳台水管",
+      "未保温管道"
+    ]
+  },
+  {
+    "id": 20,
+    "category": "应急维修",
+    "subCategory": "电",
+    "problem": "漏电",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "电器或线路存在漏电现象，有触电风险",
+    "trigger_keywords": [
+      "漏电",
+      "外壳带电",
+      "触摸有麻感",
+      "电器漏电",
+      "线路漏电",
+      "地线带电"
+    ],
+    "trigger_location": [
+      "室内插座",
+      "电器设备",
+      "配电箱",
+      "卫生间"
+    ]
+  },
+  {
+    "id": 21,
+    "category": "应急维修",
+    "subCategory": "电",
+    "problem": "室内电线短路",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "室内电路发生短路故障",
+    "trigger_keywords": [
+      "电线短路",
+      "电火花",
+      "线路烧焦",
+      "室内没电但其他户有",
+      "电线短路跳闸",
+      "线路没电",
+      "线路断电",
+      "电路烧坏",
+      "线路跳闸"
+    ],
+    "trigger_location": [
+      "室内配电箱",
+      "插座",
+      "电器线路"
+    ]
+  },
+  {
+    "id": 22,
+    "category": "应急维修",
+    "subCategory": "电",
+    "problem": "独户断电",
+    "priority": "半小时到现场",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "单个住户家中停电（非整栋停电）",
+    "trigger_keywords": [
+      "自家没电",
+      "独户停电",
+      "家中断电",
+      "只有我家没电",
+      "断电闸烧了",
+      "空气开关跳了整户没电",
+      "电闸爆了家里断电",
+      "跳闸整户没电",
+      "公共区域断电",
+      "车棚断电",
+      "非机动车库断电"
+    ],
+    "trigger_location": [
+      "单户室内",
+      "配电箱"
+    ]
+  },
+  {
+    "id": 23,
+    "category": "应急维修",
+    "subCategory": "其他应急维修",
+    "problem": "门窗松动",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "高空作业证",
+      "维修工证"
+    ],
+    "target_dept_semantic": "高空维修组",
+    "description": "门窗安装不牢固，存在安全隐患",
+    "trigger_keywords": [
+      "门窗松动",
+      "窗户晃动",
+      "门框松动",
+      "门窗螺丝脱落",
+      "推拉窗脱轨",
+      "广告牌松动",
+      "广告牌脱落",
+      "招牌脱落",
+      "门头广告牌掉落"
+    ],
+    "trigger_location": [
+      "入户门",
+      "窗户",
+      "阳台门"
+    ]
+  },
+  {
+    "id": 24,
+    "category": "应急维修",
+    "subCategory": "其他应急维修",
+    "problem": "雨棚松动",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "高空作业证",
+      "维修工证"
+    ],
+    "target_dept_semantic": "高空维修组",
+    "description": "室外雨棚固定不牢固，有脱落风险",
+    "trigger_keywords": [
+      "雨棚松动",
+      "雨棚摇晃",
+      "雨棚螺丝锈",
+      "雨棚脱落风险"
+    ],
+    "trigger_location": [
+      "室外雨棚",
+      "阳台雨棚",
+      "入口雨棚"
+    ]
+  },
+  {
+    "id": 25,
+    "category": "应急维修",
+    "subCategory": "其他应急维修",
+    "problem": "晾衣架松动",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "高空作业证",
+      "维修工证"
+    ],
+    "target_dept_semantic": "高空维修组",
+    "description": "阳台晾衣架固定不牢固，有坠落风险",
+    "trigger_keywords": [
+      "晾衣架松动",
+      "晾衣架摇晃",
+      "晾衣架螺丝松",
+      "晾衣架脱落",
+      "晾衣架绳子断裂",
+      "晾衣架钢丝绳断了",
+      "晾衣绳断裂",
+      "晾衣杆钢丝绳断裂",
+      "晾衣绳断了"
+    ],
+    "trigger_location": [
+      "阳台晾衣架"
+    ]
+  },
+  {
+    "id": 26,
+    "category": "应急维修",
+    "subCategory": "其他应急维修",
+    "problem": "空调外机架松动",
+    "priority": "2小时到现场",
+    "required_cert": [
+      "高空作业证",
+      "维修工证"
+    ],
+    "target_dept_semantic": "高空维修组",
+    "description": "空调室外机支架固定不牢固",
+    "trigger_keywords": [
+      "空调外机架松动",
+      "外机摇晃",
+      "支架锈蚀",
+      "外机脱落风险",
+      "空调外机墩子开裂",
+      "外机平台水泥墩子",
+      "空调墩子松动",
+      "外机墩子裂缝"
+    ],
+    "trigger_location": [
+      "空调室外机支架",
+      "外墙"
+    ]
+  },
+  {
+    "id": 27,
+    "category": "日常维修",
+    "subCategory": "电气电路",
+    "problem": "插座",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "电源插座损坏或接触不良",
+    "trigger_keywords": [
+      "插座没电",
+      "插座坏了",
+      "插座松动",
+      "插座接触不良",
+      "插孔松",
+      "插座面板损坏"
+    ],
+    "trigger_location": [
+      "室内插座",
+      "墙壁插座",
+      "厨房插座",
+      "卫生间插座"
+    ]
+  },
+  {
+    "id": 28,
+    "category": "日常维修",
+    "subCategory": "电气电路",
+    "problem": "照明开关",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "灯光控制开关损坏或失灵",
+    "trigger_keywords": [
+      "开关坏了",
+      "开关按不动",
+      "开关没反应",
+      "开关面板松动",
+      "开关接触不良"
+    ],
+    "trigger_location": [
+      "室内墙壁开关",
+      "走廊开关",
+      "卫生间开关"
+    ]
+  },
+  {
+    "id": 29,
+    "category": "日常维修",
+    "subCategory": "电气电路",
+    "problem": "室内照明灯",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "家庭内部的照明灯具损坏",
+    "trigger_keywords": [
+      "室内灯不亮",
+      "室内灯坏了",
+      "室内灯光闪烁",
+      "室内灯管不亮",
+      "灯泡烧了",
+      "吊灯不亮",
+      "吸顶灯坏了"
+    ],
+    "trigger_location": [
+      "客厅",
+      "卧室",
+      "厨房",
+      "卫生间",
+      "阳台"
+    ]
+  },
+  {
+    "id": 30,
+    "category": "日常维修",
+    "subCategory": "电气电路",
+    "problem": "整修电气线路",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "电气线路需要检修或重新布线",
+    "trigger_keywords": [
+      "线路检修",
+      "重新布线",
+      "线路老化",
+      "电路改造",
+      "电线外皮破损"
+    ],
+    "trigger_location": [
+      "室内线路",
+      "配电箱",
+      "管线"
+    ]
+  },
+  {
+    "id": 31,
+    "category": "日常维修",
+    "subCategory": "电气电路",
+    "problem": "漏电保护器、空气开关",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "漏电保护器或空气开关故障",
+    "trigger_keywords": [
+      "漏电保护器跳",
+      "空开跳闸",
+      "开关推不上",
+      "漏保坏了",
+      "空开烧了",
+      "闸坏了",
+      "电闸坏了",
+      "空开烧坏"
+    ],
+    "trigger_location": [
+      "配电箱",
+      "强电井"
+    ]
+  },
+  {
+    "id": 32,
+    "category": "日常维修",
+    "subCategory": "电气电路",
+    "problem": "公灯",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "电工证"
+    ],
+    "target_dept_semantic": "电力维修组",
+    "description": "公共区域的照明灯具（楼道灯、路灯、景观灯等）",
+    "trigger_keywords": [
+      "楼道灯不亮",
+      "路灯坏了",
+      "景观灯不亮",
+      "电梯厅灯暗",
+      "地下车库灯不亮",
+      "小区景观灯不亮"
+    ],
+    "trigger_location": [
+      "楼道",
+      "电梯厅",
+      "地下车库",
+      "小区道路",
+      "大堂"
+    ]
+  },
+  {
+    "id": 33,
+    "category": "日常维修",
+    "subCategory": "卫生洁具",
+    "problem": "马桶坐便器",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "马桶本体损坏或故障",
+    "trigger_keywords": [
+      "马桶漏水",
+      "马桶坏了",
+      "马桶裂缝",
+      "马桶底座松",
+      "马桶本体破损",
+      "马桶泛臭"
+    ],
+    "trigger_location": [
+      "卫生间马桶"
+    ]
+  },
+  {
+    "id": 34,
+    "category": "日常维修",
+    "subCategory": "卫生洁具",
+    "problem": "马桶水箱",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "马桶上方的水箱损坏或故障",
+    "trigger_keywords": [
+      "马桶水箱漏水",
+      "水箱不上水",
+      "水箱溢水",
+      "水箱配件坏",
+      "按钮卡住",
+      "马桶进水管漏水",
+      "马桶进水管坏",
+      "马桶进水管损坏"
+    ],
+    "trigger_location": [
+      "马桶水箱"
+    ]
+  },
+  {
+    "id": 35,
+    "category": "日常维修",
+    "subCategory": "卫生洁具",
+    "problem": "水斗、台盆",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "洗手盆或洗菜盆损坏",
+    "trigger_keywords": [
+      "台盆漏水",
+      "水斗漏水",
+      "台盆水斗漏水",
+      "洗手盆裂",
+      "台盆堵塞",
+      "面盆下水不畅",
+      "台盆松动",
+      "台盆本体破损",
+      "台盆裂缝"
+    ],
+    "trigger_location": [
+      "卫生间洗手盆",
+      "厨房水槽"
+    ]
+  },
+  {
+    "id": 36,
+    "category": "日常维修",
+    "subCategory": "卫生洁具",
+    "problem": "浴缸",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "浴缸损坏或堵塞",
+    "trigger_keywords": [
+      "浴缸漏水",
+      "浴缸堵塞",
+      "浴缸裂缝",
+      "浴缸下水慢",
+      "浴缸龙头故障"
+    ],
+    "trigger_location": [
+      "卫生间浴缸"
+    ]
+  },
+  {
+    "id": 37,
+    "category": "日常维修",
+    "subCategory": "卫生洁具",
+    "problem": "龙头",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "水龙头损坏或漏水",
+    "trigger_keywords": [
+      "龙头漏水",
+      "龙头滴水",
+      "龙头不出水",
+      "龙头手柄坏",
+      "龙头阀芯坏",
+      "龙头本体渗漏",
+      "龙头松动"
+    ],
+    "trigger_location": [
+      "厨房水槽",
+      "卫生间洗手盆",
+      "阳台"
+    ]
+  },
+  {
+    "id": 38,
+    "category": "日常维修",
+    "subCategory": "屋面墙面",
+    "problem": "粉层剥落",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "房屋维修组",
+    "description": "墙面或天花板粉饰层剥落",
+    "trigger_keywords": [
+      "墙皮脱落",
+      "石灰掉落",
+      "粉刷层起皮",
+      "墙面掉灰",
+      "天花板掉皮"
+    ],
+    "trigger_location": [
+      "室内墙面",
+      "天花板"
+    ]
+  },
+  {
+    "id": 39,
+    "category": "日常维修",
+    "subCategory": "屋面墙面",
+    "problem": "屋面渗水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "防水工证",
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "房屋维修组",
+    "description": "屋顶防水层失效，导致渗水",
+    "trigger_keywords": [
+      "屋顶渗水",
+      "屋面渗水",
+      "屋面潮湿",
+      "防水层老化",
+      "屋顶裂缝渗水",
+      "天花板有水渍",
+      "顶楼渗水",
+      "天花板阴湿",
+      "顶面潮湿发霉",
+      "屋顶阴水",
+      "靠南面顶漏水",
+      "屋顶反碱",
+      "顶部渗水"
+    ],
+    "trigger_location": [
+      "屋顶",
+      "顶楼天花板"
+    ]
+  },
+  {
+    "id": 40,
+    "category": "日常维修",
+    "subCategory": "屋面墙面",
+    "problem": "墙面渗水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "防水工证",
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "房屋维修组",
+    "description": "墙壁内部渗水，导致墙面潮湿发霉",
+    "trigger_keywords": [
+      "内墙渗水",
+      "墙壁渗水",
+      "室内墙面渗水",
+      "墙壁潮湿",
+      "墙面发霉",
+      "墙上有水印",
+      "内墙渗漏",
+      "墙面潮湿",
+      "墙体水印"
+    ],
+    "trigger_location": [
+      "内墙",
+      "外墙内侧"
+    ]
+  },
+  {
+    "id": 41,
+    "category": "日常维修",
+    "subCategory": "屋面墙面",
+    "problem": "上下家漏水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证",
+      "防水工证"
+    ],
+    "target_dept_semantic": "房屋维修组",
+    "description": "楼上住户漏水影响楼下住户",
+    "trigger_keywords": [
+      "楼上漏水",
+      "楼下漏水",
+      "楼上渗水下来",
+      "上下层漏水",
+      "卫生间顶上漏水",
+      "卧室顶上漏水",
+      "卫生间顶漏水",
+      "楼上漏水到楼下",
+      "管道老化漏水至楼下",
+      "下水管漏水至楼下"
+    ],
+    "trigger_location": [
+      "楼上楼下",
+      "天花板",
+      "地板"
+    ]
+  },
+  {
+    "id": 42,
+    "category": "日常维修",
+    "subCategory": "屋面墙面",
+    "problem": "墙面损坏",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "房屋维修组",
+    "description": "墙壁表面出现破损或损坏",
+    "trigger_keywords": [
+      "墙面破损",
+      "墙面开裂",
+      "墙面坑洞",
+      "墙体损坏",
+      "墙砖脱落"
+    ],
+    "trigger_location": [
+      "室内墙面",
+      "走廊墙面"
+    ]
+  },
+  {
+    "id": 43,
+    "category": "日常维修",
+    "subCategory": "屋面墙面",
+    "problem": "内墙渗水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "防水工证",
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "房屋维修组",
+    "description": "室内墙体内部渗水",
+    "trigger_keywords": [
+      "内墙渗水",
+      "室内墙面水印",
+      "墙内漏水"
+    ],
+    "trigger_location": [
+      "室内隔墙",
+      "内墙"
+    ]
+  },
+  {
+    "id": 44,
+    "category": "日常维修",
+    "subCategory": "屋面墙面",
+    "problem": "内顶粉层剥落",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "房屋维修组",
+    "description": "室内天花板粉饰层剥落",
+    "trigger_keywords": [
+      "天花板掉皮",
+      "内顶剥落",
+      "石膏板脱落",
+      "顶面起泡"
+    ],
+    "trigger_location": [
+      "室内天花板"
+    ]
+  },
+  {
+    "id": 45,
+    "category": "日常维修",
+    "subCategory": "门厅楼道",
+    "problem": "信报箱",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "综合维修工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "住户信报箱损坏或无法正常使用",
+    "trigger_keywords": [
+      "信报箱坏了",
+      "报箱门关不上",
+      "信报箱锁坏",
+      "报箱变形",
+      "信箱破损"
+    ],
+    "trigger_location": [
+      "楼道信报箱"
+    ]
+  },
+  {
+    "id": 46,
+    "category": "日常维修",
+    "subCategory": "门厅楼道",
+    "problem": "门铃",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "综合维修工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "住户门铃无法正常使用",
+    "trigger_keywords": [
+      "门铃不能用",
+      "门铃没反应",
+      "门铃不响",
+      "对讲门铃坏",
+      "门铃失效"
+    ],
+    "trigger_location": [
+      "入户门",
+      "门厅"
+    ]
+  },
+  {
+    "id": 47,
+    "category": "日常维修",
+    "subCategory": "门厅楼道",
+    "problem": "上人孔",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "综合维修工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "楼顶或设备间的检修口盖损坏",
+    "trigger_keywords": [
+      "上人孔盖坏",
+      "检修口盖松动",
+      "屋顶人孔破损",
+      "设备间门坏"
+    ],
+    "trigger_location": [
+      "屋顶",
+      "设备间"
+    ]
+  },
+  {
+    "id": 48,
+    "category": "日常维修",
+    "subCategory": "门厅楼道",
+    "problem": "扶手整修",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "综合维修工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "楼梯扶手需要维修或翻新，不涉及安全风险的日常维修，如掉漆、轻微变形等",
+    "trigger_keywords": [
+      "扶手整修",
+      "楼梯扶手掉漆",
+      "扶手翻新",
+      "木扶手开裂",
+      "扶手生锈",
+      "扶手油漆脱落",
+      "扶手装饰条损坏",
+      "扶手坏了",
+      "扶手损坏",
+      "扶手破损"
+    ],
+    "trigger_location": [
+      "楼梯扶手",
+      "走廊扶手"
+    ]
+  },
+  {
+    "id": 49,
+    "category": "日常维修",
+    "subCategory": "门厅楼道",
+    "problem": "配玻璃",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "玻璃工证",
+      "综合维修证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "门窗玻璃破损需要更换",
+    "trigger_keywords": [
+      "玻璃碎了",
+      "窗户玻璃破",
+      "玻璃裂纹",
+      "门窗玻璃更换",
+      "玻璃缺失",
+      "玻璃破损",
+      "窗玻璃损坏",
+      "门玻璃损坏"
+    ],
+    "trigger_location": [
+      "窗户",
+      "门玻璃",
+      "阳台玻璃"
+    ]
+  },
+  {
+    "id": 50,
+    "category": "日常维修",
+    "subCategory": "门厅楼道",
+    "problem": "楼地面整修",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "楼道或室内地面需要维修，包括地面坑洞修补",
+    "trigger_keywords": [
+      "地面整修",
+      "地砖翘起",
+      "地面不平",
+      "地面破损",
+      "楼道地砖松动",
+      "地面坑洞",
+      "地面有坑",
+      "门口有坑"
+    ],
+    "trigger_location": [
+      "楼道地面",
+      "室内客厅",
+      "走廊"
+    ]
+  },
+  {
+    "id": 51,
+    "category": "日常维修",
+    "subCategory": "门厅楼道",
+    "problem": "板式雨篷损坏",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "综合维修工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "室外板式雨篷损坏",
+    "trigger_keywords": [
+      "雨篷损坏",
+      "雨篷板裂",
+      "雨篷漏水",
+      "雨篷支架锈"
+    ],
+    "trigger_location": [
+      "入口雨篷",
+      "阳台雨篷"
+    ]
+  },
+  {
+    "id": 52,
+    "category": "日常维修",
+    "subCategory": "门厅楼道",
+    "problem": "门窗修理",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "综合维修工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "门窗开合不畅或损坏需要维修",
+    "trigger_keywords": [
+      "门窗关不上",
+      "门窗开合困难",
+      "门窗变形",
+      "窗扇脱落",
+      "门锁对不准",
+      "门锁损坏",
+      "窗户晃动",
+      "设备间门坏",
+      "门铰链损坏",
+      "门禁故障",
+      "门关不上",
+      "移门脱落"
+    ],
+    "trigger_location": [
+      "入户门",
+      "窗户",
+      "室内门"
+    ]
+  },
+  {
+    "id": 53,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "管道维修",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "各类管道的检修和维护，包括家中热水供应问题",
+    "trigger_keywords": [
+      "管道维修",
+      "管道漏水",
+      "管道更换",
+      "管道接口松动",
+      "管道锈蚀",
+      "没热水",
+      "没有热水",
+      "热水不热",
+      "热水供应异常",
+      "热水器不出热水",
+      "水管坏了",
+      "水管漏水",
+      "水管渗漏",
+      "自来水管漏水",
+      "水斗下水管漏水",
+      "台盆下水管漏水",
+      "马桶下水管漏水",
+      "角阀漏水",
+      "洗脸池下水口漏水",
+      "下水道堵塞疏通",
+      "落水管脱落",
+      "管道固定架",
+      "弯管堵塞",
+      "总管堵塞",
+      "总管疏通"
+    ],
+    "trigger_location": [
+      "上下水管道",
+      "供暖管道",
+      "消防管道",
+      "卫生间",
+      "厨房"
+    ]
+  },
+  {
+    "id": 54,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "窨井、化粪井",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "地下窨井或化粪池需要清理或维修",
+    "trigger_keywords": [
+      "窨井堵塞",
+      "化粪池满",
+      "井盖破损",
+      "污水井淤积",
+      "化粪池清理"
+    ],
+    "trigger_location": [
+      "地下窨井",
+      "化粪池",
+      "污水井"
+    ]
+  },
+  {
+    "id": 55,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "明沟堵",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "室外明沟排水不畅或堵塞",
+    "trigger_keywords": [
+      "明沟堵了",
+      "排水沟堵塞",
+      "室外水沟淤积",
+      "明沟积水"
+    ],
+    "trigger_location": [
+      "室外明沟",
+      "排水沟"
+    ]
+  },
+  {
+    "id": 56,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "窨井盖",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "窨井盖缺失或损坏",
+    "trigger_keywords": [
+      "窨井盖缺失",
+      "井盖破损",
+      "井盖移位",
+      "井盖松动",
+      "铁盖丢失"
+    ],
+    "trigger_location": [
+      "道路窨井",
+      "小区路面"
+    ]
+  },
+  {
+    "id": 57,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "屋顶水箱清洗",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "屋顶储水箱需要清洗消毒",
+    "trigger_keywords": [
+      "水箱清洗",
+      "水箱消毒",
+      "水箱有杂质",
+      "水质变黄"
+    ],
+    "trigger_location": [
+      "屋顶水箱"
+    ]
+  },
+  {
+    "id": 58,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "屋顶水箱故障",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "屋顶水箱出现故障（如浮球阀失灵、进水阀卡滞、轻微渗水等），但无严重漏水或断水，可安排日常维修处理。",
+    "trigger_keywords": [
+      "水箱故障",
+      "水箱水位异常",
+      "水箱浮球阀失灵",
+      "水箱进水阀卡住",
+      "水箱轻微漏水",
+      "水箱运行异响",
+      "水箱溢水"
+    ],
+    "trigger_location": [
+      "屋顶水箱",
+      "水箱间"
+    ]
+  },
+  {
+    "id": 59,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "楼内管道堵塞",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "楼栋内部管道堵塞",
+    "trigger_keywords": [
+      "楼内管道堵",
+      "排水主管堵",
+      "立管堵塞",
+      "楼层管道不通",
+      "下水不畅",
+      "马桶堵塞",
+      "马桶下水慢",
+      "下水道堵塞疏通",
+      "卫生间地漏堵塞",
+      "下水道堵了",
+      "下水道堵塞"
+    ],
+    "trigger_location": [
+      "楼内立管",
+      "水平支管"
+    ]
+  },
+  {
+    "id": 60,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "白铁水斗",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "金属排水斗损坏",
+    "trigger_keywords": [
+      "白铁水斗烂",
+      "排水斗破损",
+      "户外白铁水斗漏水",
+      "铁皮水斗锈"
+    ],
+    "trigger_location": [
+      "屋顶排水斗",
+      "阳台水斗"
+    ]
+  },
+  {
+    "id": 61,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "天沟斜沟",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "屋顶天沟或斜沟排水不畅",
+    "trigger_keywords": [
+      "天沟堵塞",
+      "斜沟积水",
+      "屋面排水沟堵",
+      "雨水槽满",
+      "天沟漏水",
+      "天沟滴水"
+    ],
+    "trigger_location": [
+      "屋顶天沟",
+      "斜沟"
+    ]
+  },
+  {
+    "id": 62,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "水小",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "自来水出水流量过小",
+    "trigger_keywords": [
+      "水压小",
+      "水流小",
+      "水龙头出水细",
+      "水压不足",
+      "高层水小"
+    ],
+    "trigger_location": [
+      "水龙头",
+      "淋浴"
+    ]
+  },
+  {
+    "id": 63,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "包扎水管",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "水管需要保温包扎处理",
+    "trigger_keywords": [
+      "水管包扎",
+      "保温管套",
+      "水管防冻",
+      "冬季水管保温"
+    ],
+    "trigger_location": [
+      "室外水管",
+      "屋顶水管"
+    ]
+  },
+  {
+    "id": 64,
+    "category": "日常维修",
+    "subCategory": "管道窨井",
+    "problem": "水管冰冻",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "管道工证"
+    ],
+    "target_dept_semantic": "管道维修组",
+    "description": "水管因低温冻结",
+    "trigger_keywords": [
+      "水管冻住",
+      "水管冻结",
+      "水龙头不出水（冬天）",
+      "水管冰堵"
+    ],
+    "trigger_location": [
+      "室外水管",
+      "阳台水管"
+    ]
+  },
+  {
+    "id": 65,
+    "category": "日常维修",
+    "subCategory": "道路围墙",
+    "problem": "修补路面侧石",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "道路维修组",
+    "description": "道路边缘的侧石需要修补，包括路面坑洞修补",
+    "trigger_keywords": [
+      "侧石损坏",
+      "路缘石破损",
+      "路边石松动",
+      "侧石移位",
+      "路面修补",
+      "路面坑洞",
+      "门口有坑",
+      "路面破损",
+      "台阶损坏",
+      "地面破损修补",
+      "地面凹陷",
+      "路面地砖",
+      "地面不平",
+      "门口路面",
+      "斜坡损坏"
+    ],
+    "trigger_location": [
+      "小区道路",
+      "人行道",
+      "门口"
+    ]
+  },
+  {
+    "id": 66,
+    "category": "日常维修",
+    "subCategory": "道路围墙",
+    "problem": "街坊景观整修",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "泥瓦工证",
+      "绿化工证"
+    ],
+    "target_dept_semantic": "道路维修组",
+    "description": "小区公共区域的景观设施整修",
+    "trigger_keywords": [
+      "景观设施维修",
+      "花坛损坏",
+      "草坪围栏坏",
+      "休闲椅损坏",
+      "告示牌损坏",
+      "门牌号缺失",
+      "道路设施维修",
+      "健身器材损坏",
+      "小区休闲设施",
+      "公共座椅维修"
+    ],
+    "trigger_location": [
+      "小区花园",
+      "休闲区"
+    ]
+  },
+  {
+    "id": 67,
+    "category": "日常维修",
+    "subCategory": "道路围墙",
+    "problem": "整修围墙栅栏",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "焊工证",
+      "综合维修证"
+    ],
+    "target_dept_semantic": "道路维修组",
+    "description": "小区围墙或栅栏需要维修",
+    "trigger_keywords": [
+      "围墙损坏",
+      "栅栏倾斜",
+      "铁栅栏锈断",
+      "围墙裂缝",
+      "栏杆损坏",
+      "围栏损坏",
+      "铁栏杆脱落",
+      "道闸故障",
+      "栏杆松动",
+      "隔离桩损坏"
+    ],
+    "trigger_location": [
+      "小区围墙",
+      "栅栏"
+    ]
+  },
+  {
+    "id": 68,
+    "category": "日常维修",
+    "subCategory": "小区积水",
+    "problem": "路面积水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "排水维修资质"
+    ],
+    "target_dept_semantic": "排水维修组",
+    "description": "道路表面出现积水",
+    "trigger_keywords": [
+      "路面积水",
+      "道路水坑",
+      "小区路面水",
+      "排水不畅积水"
+    ],
+    "trigger_location": [
+      "小区道路",
+      "出入口"
+    ]
+  },
+  {
+    "id": 69,
+    "category": "日常维修",
+    "subCategory": "小区积水",
+    "problem": "机动车车库积水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "排水维修资质"
+    ],
+    "target_dept_semantic": "排水维修组",
+    "description": "机动车停车场出现积水",
+    "trigger_keywords": [
+      "车库积水",
+      "地下车库水",
+      "停车场积水",
+      "车库排水不畅"
+    ],
+    "trigger_location": [
+      "地下车库",
+      "露天停车场"
+    ]
+  },
+  {
+    "id": 70,
+    "category": "日常维修",
+    "subCategory": "小区积水",
+    "problem": "非机动车车库积水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "排水维修资质"
+    ],
+    "target_dept_semantic": "排水维修组",
+    "description": "非机动车停车场出现积水",
+    "trigger_keywords": [
+      "非机动车库积水",
+      "自行车库水",
+      "电瓶车库积水"
+    ],
+    "trigger_location": [
+      "非机动车库",
+      "车棚"
+    ]
+  },
+  {
+    "id": 71,
+    "category": "日常维修",
+    "subCategory": "小区积水",
+    "problem": "设备层积水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "排水维修资质"
+    ],
+    "target_dept_semantic": "排水维修组",
+    "description": "建筑物设备层出现积水",
+    "trigger_keywords": [
+      "设备层积水",
+      "设备间漏水",
+      "机房积水",
+      "泵房积水"
+    ],
+    "trigger_location": [
+      "设备层",
+      "泵房",
+      "配电室"
+    ]
+  },
+  {
+    "id": 72,
+    "category": "日常维修",
+    "subCategory": "小区积水",
+    "problem": "底层家中积水",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "排水维修资质"
+    ],
+    "target_dept_semantic": "排水维修组",
+    "description": "一楼住户家中出现积水",
+    "trigger_keywords": [
+      "一楼积水",
+      "家中进水",
+      "地面冒水",
+      "雨水倒灌"
+    ],
+    "trigger_location": [
+      "一楼室内",
+      "院子"
+    ]
+  },
+  {
+    "id": 73,
+    "category": "日常维修",
+    "subCategory": "其他日常维修",
+    "problem": "电梯故障",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "电梯维修证"
+    ],
+    "target_dept_semantic": "电梯维修组",
+    "description": "电梯运行异常或需要维护，无人员被关在内",
+    "trigger_keywords": [
+      "电梯异响",
+      "电梯抖动",
+      "电梯平层不准",
+      "电梯按键失灵",
+      "电梯运行缓慢",
+      "电梯灯不亮",
+      "电梯三方通话故障",
+      "电梯显示屏故障",
+      "电梯电扇故障",
+      "电梯天花板损坏",
+      "电梯门故障",
+      "电梯积水",
+      "电梯互感器故障"
+    ],
+    "trigger_location": [
+      "电梯轿厢",
+      "电梯厅"
+    ]
+  },
+  {
+    "id": 74,
+    "category": "日常维修",
+    "subCategory": "其他日常维修",
+    "problem": "消防设施",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "消防设施操作员证"
+    ],
+    "target_dept_semantic": "消防维保组",
+    "description": "消防器材或设施损坏",
+    "trigger_keywords": [
+      "消防栓损坏",
+      "灭火器缺失",
+      "烟感故障",
+      "喷淋头损坏",
+      "消防报警故障",
+      "消防管漏水",
+      "消防应急灯不亮",
+      "防火门损坏",
+      "消防箱松动",
+      "消防管保温",
+      "消防压力不足",
+      "喷淋管故障",
+      "消防报警器故障",
+      "消防监控故障",
+      "消防设施故障"
+    ],
+    "trigger_location": [
+      "楼道",
+      "电梯厅",
+      "消防通道"
+    ]
+  },
+  {
+    "id": 75,
+    "category": "日常维修",
+    "subCategory": "其他日常维修",
+    "problem": "拆脚手架",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "架子工证"
+    ],
+    "target_dept_semantic": "工程维修组",
+    "description": "拆除施工用脚手架",
+    "trigger_keywords": [
+      "拆除脚手架",
+      "脚手架拆除",
+      "施工架拆卸"
+    ],
+    "trigger_location": [
+      "建筑外墙",
+      "施工区域"
+    ]
+  },
+  {
+    "id": 76,
+    "category": "日常维修",
+    "subCategory": "其他日常维修",
+    "problem": "地坪",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "泥瓦工证"
+    ],
+    "target_dept_semantic": "房屋维修组",
+    "description": "地面需要维修或翻新",
+    "trigger_keywords": [
+      "地坪修复",
+      "地面起砂",
+      "地面不平整",
+      "地坪翻新"
+    ],
+    "trigger_location": [
+      "室内地面",
+      "车库地面",
+      "走廊地面"
+    ]
+  },
+  {
+    "id": 77,
+    "category": "日常维修",
+    "subCategory": "其他日常维修",
+    "problem": "其他",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "综合维修工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "无法归类的其他维修问题，包括晾衣架漏电等特殊情况",
+    "trigger_keywords": [
+      "其他维修",
+      "杂项问题",
+      "零星修理",
+      "晾衣架漏电",
+      "晾衣架带电",
+      "晾衣架有麻感",
+      "监控故障",
+      "水泵故障",
+      "电表箱故障",
+      "网线箱脱落",
+      "门禁故障",
+      "水表阀门渗水",
+      "暖气故障",
+      "增压泵故障",
+      "宣传牌脱落",
+      "充电桩故障",
+      "落水管脱落",
+      "空调外机漏水",
+      "排气管道故障",
+      "墙面刷涂料",
+      "燃气管道维修",
+      "淋浴设施故障",
+      "楼号牌损坏",
+      "门牌损坏",
+      "地漏疏通",
+      "墙面粉刷",
+      "管道包扎",
+      "空调排水管"
+    ],
+    "trigger_location": [
+      "各类位置",
+      "阳台晾衣架"
+    ]
+  },
+  {
+    "id": 78,
+    "category": "日常维修",
+    "subCategory": "其他日常维修",
+    "problem": "树木倒伏",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "园林绿化工证"
+    ],
+    "target_dept_semantic": "绿化养护组",
+    "description": "树木倾倒或倾斜",
+    "trigger_keywords": [
+      "树倒了",
+      "树木倾斜",
+      "树枝断裂",
+      "树木被风吹倒"
+    ],
+    "trigger_location": [
+      "小区绿地",
+      "道路旁"
+    ]
+  },
+  {
+    "id": 79,
+    "category": "日常维修",
+    "subCategory": "其他日常维修",
+    "problem": "渗漏认定",
+    "priority": "72小时内完成",
+    "required_cert": [
+      "综合维修工证"
+    ],
+    "target_dept_semantic": "综合维修组",
+    "description": "对漏水渗漏原因进行专业鉴定",
+    "trigger_keywords": [
+      "渗漏鉴定",
+      "漏水原因排查",
+      "认定责任",
+      "查漏水点"
+    ],
+    "trigger_location": [
+      "漏水现场",
+      "管道周边"
+    ]
+  }
+]

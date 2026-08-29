@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data — these hold real operational data and are never committed.
+# Only the anonymised sample in data/test_data/ is version-controlled.
+data/dataset/
+data/logs/
+data/excel_data/
+data/*.db
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+
+# Build / cache
+*.egg-info/
+build/
+.pytest_cache/
+.coverage
