@@ -11,7 +11,7 @@ services:
     name: ai-workorder
     runtime: docker
     plan: free            # 需常驻不休眠就改成 starter（$7/月）
-    branch: main
+    branch: master
     region: singapore     # 离香港最近的 Render 区域
     healthCheckPath: /docs
     envVars:
