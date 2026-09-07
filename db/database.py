@@ -55,17 +55,22 @@ class WorkOrderDB:
             cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, host: str = 'localhost', port: int = 3306,
-                 user: str = 'root', password: str = 'Qazplm147369#',
-                 database: str = 'AI_Work_Order', charset: str = 'utf8mb4'):
+    def __init__(self, host: str = None, port: int = None,
+                 user: str = None, password: str = None,
+                 database: str = None, charset: str = 'utf8mb4'):
         if self._initialized:
             return
-        self.host = host
-        self.port = port
-        self.user = user
-        self.password = password
-        self.database = database
+        # 连接参数优先取环境变量（Docker / 云端部署），未设置时回落本机默认。
+        # 密码不再硬编码：本地请在项目根目录 .env 中配置 DB_PASSWORD，
+        # 该文件已加入 .gitignore，不会进版本库。
+        self.host = host or os.environ.get('DB_HOST', 'localhost')
+        self.port = int(port or os.environ.get('DB_PORT', 3306))
+        self.user = user or os.environ.get('DB_USER', 'root')
+        self.password = password if password is not None else os.environ.get('DB_PASSWORD', '')
+        self.database = database or os.environ.get('DB_NAME', 'AI_Work_Order')
         self.charset = charset
+        # TLS 参数（云端托管库如 TiDB Cloud 强制要求加密连接）
+        self._ssl_kwargs = self._build_ssl_kwargs()
         self._connection = None
         self._initialized = True
 
@@ -75,6 +80,23 @@ class WorkOrderDB:
         self._migrate_work_orders_table()
         self._create_rules_tables_if_not_exists()
 
+    @staticmethod
+    def _build_ssl_kwargs() -> dict:
+        """从环境变量构建 PyMySQL 的 TLS 参数。
+
+        云端托管库（TiDB Cloud 等）强制要求 TLS 连接，不开就连不上：
+            DB_SSL=1                 -> 启用 TLS，用系统 CA 校验证书
+            DB_SSL_CA=/path/ca.pem   -> 启用 TLS，用指定 CA 证书
+        两者都不设则不启用 TLS（本地 MySQL 默认即如此）。
+        """
+        ca = os.environ.get('DB_SSL_CA', '').strip()
+        flag = os.environ.get('DB_SSL', '').strip().lower() in ('1', 'true', 'yes', 'on')
+        if ca:
+            return {'ssl': {'ca': ca}}
+        if flag:
+            return {'ssl': {}}
+        return {}
+
     def _get_raw_connection(self):
         """获取原始数据库连接（用于创建数据库等操作）"""
         return pymysql.connect(
@@ -83,7 +105,8 @@ class WorkOrderDB:
             user=self.user,
             password=self.password,
             charset=self.charset,
-            cursorclass=DictCursor
+            cursorclass=DictCursor,
+            **self._ssl_kwargs
         )
 
     def _get_connection(self):
@@ -97,7 +120,8 @@ class WorkOrderDB:
                 database=self.database,
                 charset=self.charset,
                 cursorclass=DictCursor,
-                autocommit=True
+                autocommit=True,
+                **self._ssl_kwargs
             )
         return self._connection
 
@@ -1516,9 +1540,9 @@ class WorkOrderDB:
         self.close()
 
 
-def get_db(host: str = 'localhost', port: int = 3306,
-           user: str = 'root', password: str = 'Qazplm147369#',
-           database: str = 'AI_Work_Order') -> WorkOrderDB:
+def get_db(host: str = None, port: int = None,
+           user: str = None, password: str = None,
+           database: str = None) -> WorkOrderDB:
     """
     获取 WorkOrderDB 单例实例
 

@@ -203,6 +203,7 @@ portfolio material. **No real personal data is included in this repository.**
 ## Author
 
 **袁承烨 (Chengye Yuan)** — M.Sc. in AI and Entrepreneurship, HKUST (2026–2028).
-B.Sc. in Computer Science, East China University of Science and Technology, 2026.
+B.Eng. in Computer Science and Technology, East China University of Science and
+Technology, 2026.
 
 Built during an industry internship.

@@ -115,6 +115,14 @@ from rule_engine.worker_assigner import start_workorder as _assigner_start
 from rule_engine.worker_assigner import worker_complete_workorder as _assigner_worker_complete
 from rule_engine.worker_assigner import complete_workorder as _assigner_complete
 
+# 加载 .env（本地开发用）。未安装 python-dotenv 时静默跳过，
+# 直接依赖系统/容器环境变量——云端部署走的就是这条路径。
+try:
+    from dotenv import load_dotenv
+    load_dotenv(override=False)
+except Exception:
+    pass
+
 # ============================================================
 # 测试任务管理器（后台运行，线程安全）
 # ============================================================
@@ -2274,6 +2282,108 @@ async def download_test_log(filename: str = Path(..., description="日志文件�
         })
     except Exception as e:
         return error_response(message=str(e), code=1500)
+
+
+# ============================================================
+# 静态前端托管（Docker / 云端部署用）
+#   /       -> frontend/dist         报修端 / 管理端
+#   /worker -> worker-frontend/dist  工人端
+# 前端用相对路径 /api/v1 调接口，同域部署无需改动任何前端代码
+# ============================================================
+from fastapi.responses import FileResponse
+
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_WEB_DIST = os.path.join(_BASE_DIR, "frontend", "dist")
+_WORKER_DIST = os.path.join(_BASE_DIR, "worker-frontend", "dist")
+_HAS_WEB = os.path.isfile(os.path.join(_WEB_DIST, "index.html"))
+_HAS_WORKER = os.path.isfile(os.path.join(_WORKER_DIST, "index.html"))
+
+
+def _resolve_static(rel_path: str):
+    """把 URL 相对路径解析成本地静态文件，带目录穿越防护。
+
+    两个前端的资源都写在 /assets/ 根路径下（vite 默认 base="/"），
+    但文件名带不同 hash，不会冲突，所以合并查找：工人端优先，再主端。
+    命中返回绝对路径，未命中或越界返回 None。
+    """
+    if not rel_path:
+        return None
+    rel_path = rel_path.lstrip("/")
+    for base in (_WORKER_DIST, _WEB_DIST):
+        full = os.path.normpath(os.path.join(base, rel_path))
+        if os.path.commonpath([os.path.abspath(full), os.path.abspath(base)]) != os.path.abspath(base):
+            continue  # 目录穿越，跳过
+        if os.path.isfile(full):
+            return full
+    return None
+
+
+if _HAS_WEB:
+    print("[static] 已启用前端托管 -> frontend/dist")
+if _HAS_WORKER:
+    print("[static] 已启用前端托管 -> worker-frontend/dist")
+if not (_HAS_WEB or _HAS_WORKER):
+    print(f"[static] 未找到构建产物 {_WEB_DIST}，仅提供 API（前端请用 npm run dev）")
+
+
+@app.get("/worker", include_in_schema=False)
+async def _worker_root():
+    """补上尾斜杠：工人端用 history 路由，必须落在 /worker/ 下。"""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/worker/", status_code=307)
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def _spa_fallback(full_path: str):
+    """SPA 深链接回退。
+
+    必须在所有 API 路由注册之后定义，否则会吞掉接口请求。
+    - /api/* /docs /redoc /openapi.json 保持 404，交给框架处理
+    - /assets/*（含其它真实静态文件）按文件返回
+    - /worker/* 一律回退到工人端 index.html（history 模式）
+    - 其余一律回退到主端 index.html
+    """
+    if full_path.startswith(("api/", "docs", "redoc", "openapi.json")):
+        raise HTTPException(status_code=404, detail="Not Found")
+
+    # 真实静态文件（/assets/xxx.js、/favicon.svg 等）优先按文件返回
+    hit = _resolve_static(full_path)
+    if hit:
+        return FileResponse(hit)
+
+    if _HAS_WORKER and (full_path == "worker" or full_path.startswith("worker/")):
+        return FileResponse(os.path.join(_WORKER_DIST, "index.html"))
+    if _HAS_WEB:
+        return FileResponse(os.path.join(_WEB_DIST, "index.html"))
+    raise HTTPException(status_code=404, detail="Not Found")
+
+
+# ============================================================
+# 首次部署自举：规则表为空时，自动从 data/rules 的 JSON 导入
+# 这样全新数据库启动后 demo 立刻可用，不需要手工灌数据。
+# 任何异常都只打印不抛出——数据库未就绪时服务仍要能起来。
+# ============================================================
+try:
+    from db.database import get_db as _get_db
+    _db = _get_db()
+    if not _db.rules_data_exists():
+        _res = _db.init_rules_from_json(os.path.join(_BASE_DIR, "data", "rules"))
+        print(f"[bootstrap] 规则表为空，已自动导入: {_res}")
+    else:
+        print("[bootstrap] 规则数据已存在，跳过导入")
+
+    # error_feedbacks 表只在 FeedbackHandler 首次实例化时才建，
+    # 全新库里统计页会先查到它而报错。这里提前实例化一次把表建出来。
+    FeedbackHandler()
+    print("[bootstrap] error_feedbacks 表就绪")
+
+    # workers 表以前只能靠 python tools/init_workers.py 手工建，
+    # 云端全新库会缺表，导致统计页与派单直接报错。这里一并自举。
+    from tools.init_workers import ensure_workers
+    _n = ensure_workers(base_dir=_BASE_DIR)
+    print(f"[bootstrap] workers 表就绪，共 {_n} 人")
+except Exception as _e:
+    print(f"[bootstrap] 初始化跳过（{type(_e).__name__}: {_e}）")
 
 
 # ============================================================

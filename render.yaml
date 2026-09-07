@@ -1,0 +1,31 @@
+# Render Blueprint —— 一键拉起 Web Service
+#
+# 注意：Render 只提供托管 PostgreSQL / Key Value，**没有托管 MySQL**。
+# 所以数据库要用外部 MySQL：TiDB Cloud Starter（免费、MySQL 协议兼容）
+# 或 Railway 的 MySQL 8。连接参数在 Render 面板里填，不写进仓库。
+#
+# 用法：Render Dashboard → New → Blueprint → 选这个仓库。
+
+services:
+  - type: web
+    name: ai-workorder
+    runtime: docker
+    plan: free            # 需常驻不休眠就改成 starter（$7/月）
+    branch: main
+    region: singapore     # 离香港最近的 Render 区域
+    healthCheckPath: /docs
+    envVars:
+      - key: DB_HOST
+        sync: false       # 在面板里填，例如 gateway01.ap-southeast-1.prod.aws.tidbcloud.com
+      - key: DB_PORT
+        sync: false       # TiDB 默认 4000；Railway MySQL 默认 3306
+      - key: DB_USER
+        sync: false       # TiDB 形如 xxxxxxxx.root（要带前缀）
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false       # AI_Work_Order
+      - key: DB_SSL
+        sync: false       # TiDB 必填 1；Railway 内网可留空
+      - key: ds_apikey
+        sync: false       # DeepSeek API Key

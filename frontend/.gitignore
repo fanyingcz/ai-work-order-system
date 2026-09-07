@@ -8,9 +8,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
 dist-ssr
 *.local
+
+# 注意：dist 必须提交。容器镜像不装 Node，构建时直接复用已打包产物；
+# 忽略它会导致线上只剩 API、前端打不开。
+# dist
 
 # Editor directories and files
 .vscode/*

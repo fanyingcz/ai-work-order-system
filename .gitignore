@@ -15,6 +15,11 @@ dist/
 dist-ssr/
 *.local
 
+# 例外：两个前端的构建产物必须提交。
+# 容器镜像不装 Node，缺了 dist 就只能提供纯 API，前端打不开。
+!frontend/dist/
+!worker-frontend/dist/
+
 # Editors / OS
 .vscode/
 .idea/

@@ -1,5 +1,7 @@
 node_modules
-dist
 dist-ssr
 *.local
 .DS_Store
+
+# dist 必须提交，原因同 frontend/.gitignore
+# dist
