@@ -1,209 +1,58 @@
-# AI Work Order System
+# 演示站点（Demo Site）
 
-**Natural-language maintenance ticket triage, built on an LLM plus a rule engine.**
+> 这是 `ai-work-order-system` 的**纯静态演示分支**：界面与交互和真实系统一致，
+> 但输入输出为固定剧本（mock 拦截 Ajax），**不连接任何后端、数据库或 API Key**。
 
-> **In short:** A property-management repairs desk receives tickets as free text
-> ("the bathroom ceiling is leaking and it knocked out the power"). This system
-> turns that into a categorised, addressed, worker-assigned work order in about
-> **20 seconds** instead of the **~10 minutes** a human dispatcher took, while
-> lifting classification accuracy from **92% to 96.6%**.
+- 主端（智能报修 / 管理端）：本目录根 `index.html`
+- 工人端（接单工作台）：`worker/` 子目录，需部署为独立站点根
+- 演示视频：`demo_video.webm`
 
-The interesting part is not that it calls an LLM. It is that a pure-LLM
-approach was not accurate enough to ship, so the LLM is constrained by a rule
-engine at every step — and that hybrid is what produced the numbers.
+## 为什么有这个分支
 
----
+真实版需要 MySQL + LLM API Key 才能跑，免费托管要么缺数据库要么休眠。
+本分支把两个前端原样保留、接口层换成固定剧本，任何免费静态托管都可以永久在线：
 
-## Why LLM + rules, instead of just an LLM
-
-A first pass that asked the model to classify each ticket end-to-end was
-unusable. Three failure modes kept showing up:
-
-1. **Compound problems.** *"The bathroom ceiling is leaking and it knocked out
-   the power"* — the model would classify this as an electrical fault. The root
-   cause is the leak; the power loss is downstream. Dispatching an electrician
-   sends the wrong person.
-2. **Severity confusion.** A dripping tap and a burst pipe are both "water",
-   but only one is an emergency.
-3. **Address drift.** The model would normalise or hallucinate addresses rather
-   than extracting them verbatim.
-
-So the model is never asked to do the whole job. It is given a narrow subtask,
-and a rule engine validates and constrains the output:
-
-- **Two-step classification** — the model first narrows to two candidate
-  subcategories, then matches against a curated `problem` + `trigger_keyword`
-  table. Step 2 is the part that fixed the compound-problem failure: the prompt
-  explicitly instructs the model to pick candidates around the *root cause*,
-  not the visible symptom.
-- **Rule-based validation** — unrecognised categories are rejected rather than
-  guessed at, and fall through to human handling.
-- **Deterministic address resolution** — a 9-tier priority matcher resolves
-  community names from the address string, with an administrative-prefix
-  stripper and a POI blocklist. The model extracts; the rules verify.
-- **Worker assignment** — matches on skill, current workload and the
-  community-to-maintenance-unit mapping.
-
-The practical consequence: when the taxonomy changes, you edit a JSON rule
-file, not a prompt — and you can test it.
-
----
-
-## Results
-
-Measured against ~1,000 held-out historical tickets at the site where this was
-deployed:
-
-| | Before (human) | After (system) |
+| 特性 | 真实版（master） | 演示版（demo-site） |
 |---|---|---|
-| Handling time per ticket | ~10 min | **~20 s** |
-| Classification accuracy | ~92% | **96.6%** |
+| 后端 / 数据库 | FastAPI + MySQL | 无 |
+| LLM 调用 | 需要 API Key | 固定剧本 |
+| 托管成本 | ~US$5–10/月 | $0（任意静态托管） |
+| 交互 | 完整 | 报修对话 + 工单 + 工人接单闭环 |
 
-The accuracy figure is worth being precise about: **96.6% is not 100%**, and
-the remaining ~3% matters when a misclassification sends someone to the wrong
-address. That is why the system ships with a human-in-the-loop path —
-dispatchers can correct a classification, and `feedback/` records the
-correction so the rule tables can be revised.
+## 演示剧本
 
----
+**报修端**（模拟 AI 分类的多轮对话）：
 
-## Pipeline
+1. 输入只描述问题、不含地址 → 系统提示补充地址，并列出已识别的分类
+2. 第二轮输入地址 → 生成工单（分类 / 优先级 / 指派工人 / 维修单位）
+3. 第一轮就带地址词（"路/号/弄/室/小区"等）→ 直接生成工单
 
-```
-free-text ticket
-      │
-      ▼
- input_processor ──► session state, clarification prompts
-      │
-      ▼
-   LLM (step 1) ───► 2 candidate subcategories  ─┐
-      │                                          ├─► rule_engine validates
-   LLM (step 2) ───► problem + trigger keyword  ─┘
-      │
-      ├────────────► address_handler ──► community / street / unit
-      │
-      ▼
-  work_order ──────► assigned worker + priority, persisted to MySQL
-      │
-      ▼
-   feedback ───────► human corrections feed back into the rule tables
-```
+**工人端**：任意姓名 + 任意密码即可登录（演示模式），名下 2 条工单，
+"开始处理 / 完成处理"会真实改变页面内状态。
 
-| Module | Responsibility |
-|---|---|
-| `input_processor/` | Multi-turn session handling; decides when to ask the user for clarification instead of guessing |
-| `rule_engine/` | Loads the category / subcategory / keyword tables and validates model output against them |
-| `address_handler/` | 9-tier community-name extraction, administrative-prefix stripping, POI blocklist |
-| `work_order/` | Work order construction, priority, worker assignment |
-| `feedback/` | Records dispatcher corrections |
-| `db/` | MySQL schema and access |
-
-**Stack:** FastAPI · Vue 3 + Vite (resident and worker front ends) · MySQL ·
-any OpenAI-compatible LLM endpoint.
-
----
-
-## Quickstart
+## 本地预览
 
 ```bash
-# Backend
-pip install -r requirements.txt
-
-export LLM_API_KEY=...          # any OpenAI-compatible endpoint
-export LLM_BASE_URL=...
-export MYSQL_HOST=localhost
-export MYSQL_USER=...
-export MYSQL_PASSWORD=...
-export MYSQL_DB=workorder
-
-python -m uvicorn api:app --reload --port 8000
-
-# Resident front end
-cd frontend && npm install && npm run dev
-
-# Worker front end (separate app)
-cd worker-frontend && npm install && npm run dev
+# 仓库根目录（主端）
+python -m http.server 8300
+# worker 目录（工人端，需独立根）
+cd worker && python -m http.server 8301
 ```
 
-Every credential is read from the environment. There are no hardcoded keys.
+或使用工作区的 `serve_demo.py`（带 SPA 回退）。
 
-```bash
-curl localhost:8000/api/v1/health
-```
+## 部署（任选其一，均免费）
 
----
+- **Netlify Drop**：<https://app.netlify.com/drop> 把本目录拖进去即得 URL；
+  `worker/` 单独再拖一次得第二个 URL。
+- **Cloudflare Pages**：连接 GitHub 仓库，分支选 `demo-site`，构建命令留空、
+  输出目录填 `/`（根）。`worker/` 再建一个项目、输出目录 `/worker`。
+- **Render Static Site**：同上，注意把 `/*` rewrite 到 `/index.html`（SPA 回退）。
 
-## API
+> 注意：前端是 history 路由，部署在**子路径**（如 GitHub Pages 项目页）会白屏，
+> 请使用根路径托管（上述三家默认都是根路径）。
 
-Interactive docs are served at `/docs` once the backend is running. The main
-entry point is the conversational endpoint:
+## 声明
 
-```bash
-curl -X POST localhost:8000/api/v1/converse \
-  -H 'Content-Type: application/json' \
-  -d '{"user_id":"u001","text":"卫生间顶上漏水严重，地址是示例区示例小区1号101室"}'
-```
-
-The remaining routes under `/api/v1/admin/` expose the rule tables
-(categories, subcategories, keywords, locations, prompts, workers) so the
-taxonomy can be edited without redeploying.
-
----
-
-## Sample data
-
-`data/test_data/` contains **18 tickets** — a small but representative slice
-spanning seven service categories (electrical, drain cleaning, plumbing,
-appliance repair, appliance cleaning, toilet fitting, doors and windows) and
-all three intake channels. That is enough to exercise the classification
-pipeline and run the matching tests without shipping a full operational
-dataset.
-
-**It has been fully anonymised.** Every field that could identify a resident or
-a worker was replaced:
-
-| Field | Treatment |
-|---|---|
-| Address | Replaced with synthetic addresses (`示例路41弄12号603室` etc.) |
-| Street / district | Replaced with synthetic place names |
-| Phone numbers | Replaced with reserved-range numbers (`1380000xxxx`) |
-| Worker names | Replaced with `师傅A`–`师傅L` |
-
-Two details are worth calling out, because both are easy to miss:
-
-- **Addresses also appear inside free-text fields.** Residents type them
-  straight into the problem description ("…浴霸坏…东方路3344弄24号502"). Masking
-  only the `地址` column leaves those exposed, so addresses inside descriptions
-  are rewritten too.
-- **`工单详情_detail.json` was derived from this sample**, not copied from
-  production. The pipeline reads both files; shipping one without the other
-  means a fresh clone crashes on first run.
-
-Ticket IDs and free-text problem descriptions are preserved, because they are
-what the classifier actually consumes — but with addresses and phone numbers
-stripped, no ticket can be traced back to an individual. Complaints and billing
-disputes were excluded entirely: they are internal operations material, not
-portfolio material. **No real personal data is included in this repository.**
-
----
-
-## Limitations
-
-- The taxonomy (`data/rules/`) is tuned for one property-management operator.
-  Reusing this elsewhere means rewriting those tables; the pipeline is what
-  transfers, not the rules.
-- Accuracy was measured at a single site. There is no cross-site evaluation.
-- The worker-assignment logic is a matching heuristic, not an optimisation —
-  it does no route or schedule planning.
-- The 96.6% figure comes from one deployment's historical tickets, not a
-  controlled benchmark.
-
----
-
-## Author
-
-**袁承烨 (Chengye Yuan)** — M.Sc. in AI and Entrepreneurship, HKUST (2026–2028).
-B.Eng. in Computer Science and Technology, East China University of Science and
-Technology, 2026.
-
-Built during an industry internship.
+演示站数据均为合成样例（示例小区 / 师傅工号 / 1380000xxxx），
+真实业务数据不在此仓库。源代码见 `master` 分支。
