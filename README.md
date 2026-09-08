@@ -12,6 +12,27 @@ The interesting part is not that it calls an LLM. It is that a pure-LLM
 approach was not accurate enough to ship, so the LLM is constrained by a rule
 engine at every step — and that hybrid is what produced the numbers.
 
+## Live demo (no setup required)
+
+| | Link |
+|---|---|
+| **Resident / admin app** | <https://ai-workorder-demo.netlify.app> |
+| **Worker app** | <https://ai-workorder-worker.netlify.app> |
+| **Walkthrough video** (≈1 min) | [demo_video.mp4](https://media.githubusercontent.com/media/fanyingcz/ai-work-order-system/demo-site/demo_video.mp4) |
+
+Try it in the resident app: type a problem *without* an address
+(e.g. `家里客厅灯开关坏了`) — the system asks you to supply one and shows what it
+already recognised. Reply with an address and it emits a full work order with
+category, priority, maintenance unit and an assigned worker. The worker app
+accepts any name and password.
+
+> The demo is a **fixed-script build**: the real front ends are served as-is,
+> but the API layer is mocked (see the [`demo-site`](https://github.com/fanyingcz/ai-work-order-system/tree/demo-site)
+> branch). No backend, database or API key is involved, so it is always online.
+> The source on `master` is the real system.
+
+![Resident app: a repair request is classified and turned into a work order](docs/demo-screenshot.png)
+
 ---
 
 ## Why LLM + rules, instead of just an LLM
