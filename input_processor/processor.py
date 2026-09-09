@@ -311,7 +311,11 @@ class InputProcessor:
             Exception: 调用失败且超过最大重试次数时抛出
         """
         last_error = None
-        _max_tokens = kwargs.get('max_tokens', 2048)
+        # deepseek-v4-flash 是推理模型：思考过程（reasoning_content）的 token
+        # 同样计入 max_tokens 配额。工单分类 prompt 的推理量实测 3000-6000 token，
+        # 配额给 2048 时会被思考过程吃光，正文 content 为空（finish_reason=length）。
+        # 8192 是实测留足余量的值，勿改小。
+        _max_tokens = kwargs.get('max_tokens', 8192)
 
         for attempt in range(max_retries):
             try:
@@ -324,9 +328,14 @@ class InputProcessor:
                 )
 
                 content = response.choices[0].message.content
+                _finish = getattr(response.choices[0], 'finish_reason', None)
 
                 if content is None or content.strip() == "":
-                    last_error = "DeepSeek 返回了空白响应（content 为空或 None）"
+                    if _finish == 'length':
+                        last_error = (f"max_tokens={_max_tokens} 被推理过程耗尽"
+                                      f"（finish_reason=length），正文未生成——需调大 max_tokens")
+                    else:
+                        last_error = f"DeepSeek 返回了空白响应（content 为空或 None，finish_reason={_finish}）"
                     is_last = (attempt == max_retries - 1)
                     wait_time = 5 * (2 ** attempt) + random.uniform(0, 2)
                     if is_last:
@@ -704,7 +713,7 @@ class InputProcessor:
             ]
             messages.extend(session.get_history())
 
-            result = self._call_deepseek(messages, max_tokens=2048)
+            result = self._call_deepseek(messages, max_tokens=8192)
 
             parsed = self._parse_step1_result(result)
 
@@ -837,7 +846,7 @@ class InputProcessor:
                                               location=location or "")
             messages = [{"role": "user", "content": prompt}]
 
-            result = self._call_deepseek(messages, max_tokens=2048)
+            result = self._call_deepseek(messages, max_tokens=8192)
 
             parsed = self._parse_step2_result(result, has_location)
 
