@@ -1,226 +1,117 @@
 <template>
-  <div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <h2 style="margin:0">数据库管理</h2>
-      <el-button :type="readOnly ? 'warning' : 'danger'" size="small" @click="toggleEdit">
+  <div class="page">
+    <div class="page-head db-head">
+      <div>
+        <h2 class="page-title">数据库管理</h2>
+        <p class="page-desc">规则库、地址映射与人员信息维护</p>
+      </div>
+      <el-button :type="readOnly ? 'warning' : 'danger'" size="small" plain @click="toggleEdit">
         {{ readOnly ? '启用编辑' : '锁定编辑' }}
       </el-button>
     </div>
-    <div style="margin-bottom:12px">
-      <el-input v-model="searchKeyword" placeholder="全局模糊搜索（匹配任意列，回车 / 点击按钮搜索）" clearable size="default"
-        style="max-width:520px" @keyup.enter="doSearch" @clear="doSearch">
-        <template #append><el-button @click="doSearch" :icon="'Search'">搜索</el-button></template>
-      </el-input>
-      <span v-if="searchKeyword" style="margin-left:12px;color:#409EFF;font-size:13px">
-        搜索 "{{ searchKeyword }}" — 当前显示 {{ filteredCount }} / {{ rawCount }} 条
-      </span>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="search">
+          <el-icon class="search__icon"><Search /></el-icon>
+          <input
+            v-model="searchKeyword"
+            class="search__input"
+            placeholder="全局模糊搜索，匹配任意列"
+            @keyup.enter="doSearch"
+          />
+          <button v-if="searchKeyword" class="search__clear" @click="clearSearch">×</button>
+        </div>
+        <span v-if="searchKeyword" class="card-head__hint">
+          匹配 {{ filteredCount }} / {{ rawCount }} 条
+        </span>
+      </div>
+
+      <div class="tabs">
+        <button
+          v-for="t in tabList"
+          :key="t.key"
+          class="tab"
+          :class="{ 'is-active': activeTab === t.key }"
+          @click="switchTab(t.key)"
+        >{{ t.label }}</button>
+      </div>
+
+      <div class="table-bar">
+        <span class="card-head__hint">共 {{ filteredCount }} 条</span>
+        <el-button type="primary" size="small" @click="openAdd" :disabled="readOnly">新增</el-button>
+      </div>
+
+      <el-table
+        :data="currentList"
+        v-loading="currentLoading"
+        :max-height="tableMaxHeight"
+        size="small"
+      >
+        <el-table-column
+          v-for="c in currentColumns"
+          :key="c.prop"
+          :prop="c.prop"
+          :label="c.label"
+          :width="c.width"
+          :min-width="c.minWidth"
+          :align="c.align"
+          :show-overflow-tooltip="c.tooltip"
+          :formatter="c.formatter"
+        />
+        <el-table-column label="操作" width="140" fixed="right" align="right">
+          <template #default="{ row }">
+            <div class="ops">
+              <el-button link type="primary" size="small" :disabled="readOnly" @click="openEdit(row)">编辑</el-button>
+              <el-button link type="danger" size="small" :disabled="readOnly" @click="openDelete(row)">删除</el-button>
+            </div>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="empty">
+            <div class="empty__icon"><el-icon><Coin /></el-icon></div>
+            <div class="empty__text">{{ searchKeyword ? '没有匹配的记录' : '暂无数据' }}</div>
+          </div>
+        </template>
+      </el-table>
     </div>
-    <el-tabs v-model="activeTab" type="border-card" @tab-change="onTabChange">
-      <el-tab-pane label="子类别定义" name="subcategories">
-        <div style="margin-bottom:12px;display:flex;justify-content:space-between">
-          <span style="color:#909399;font-size:13px">共 {{ filteredSubcategories.length }} 条</span>
-          <el-button type="primary" size="small" @click="showSubcategoryDialog('add')" :disabled="readOnly">新增</el-button>
-        </div>
-        <el-table :data="filteredSubcategories" stripe size="small" v-loading="subLoading" :max-height="tableMaxHeight" style="width:100%">
-          <el-table-column prop="id" label="ID" width="60" />
-          <el-table-column prop="sub_category" label="子类别名称" width="160" />
-          <el-table-column prop="description" label="描述" show-overflow-tooltip />
-          <el-table-column label="操作" width="160" fixed="right">
-            <template #default="{row}">
-              <el-button link type="primary" size="small" @click="showSubcategoryDialog('edit', row)" :disabled="readOnly">编辑</el-button>
-              <el-button link type="danger" size="small" @click="delSubcategory(row)" :disabled="readOnly">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
 
-      <el-tab-pane label="分类规则" name="categories">
-        <div style="margin-bottom:12px;display:flex;justify-content:space-between">
-          <span style="color:#909399;font-size:13px">共 {{ filteredCategories.length }} 条</span>
-          <el-button type="primary" size="small" @click="showCategoryDialog('add')" :disabled="readOnly">新增</el-button>
-        </div>
-        <el-table :data="filteredCategories" stripe size="small" v-loading="catLoading" :max-height="tableMaxHeight" style="width:100%">
-          <el-table-column prop="id" label="ID" width="60" />
-          <el-table-column prop="rule_id" label="规则ID" width="70" />
-          <el-table-column prop="category" label="类别" width="90" />
-          <el-table-column prop="sub_category" label="子类别" width="110" />
-          <el-table-column prop="problem" label="问题" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="priority" label="优先级" width="80" />
-          <el-table-column prop="required_cert" label="资质" min-width="100" show-overflow-tooltip />
-          <el-table-column prop="target_dept_semantic" label="目标部门" min-width="100" />
-          <el-table-column prop="description" label="描述" show-overflow-tooltip />
-          <el-table-column label="关键词数" width="80" align="center">
-            <template #default="{row}">{{ (row.trigger_keywords || []).length }}</template>
-          </el-table-column>
-          <el-table-column label="位置数" width="80" align="center">
-            <template #default="{row}">{{ (row.trigger_location || []).length }}</template>
-          </el-table-column>
-          <el-table-column label="操作" width="160" fixed="right">
-            <template #default="{row}">
-              <el-button link type="primary" size="small" @click="showCategoryDialog('edit', row)" :disabled="readOnly">编辑</el-button>
-              <el-button link type="danger" size="small" @click="delCategory(row)" :disabled="readOnly">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="触发关键词" name="keywords">
-        <div style="margin-bottom:12px;display:flex;justify-content:space-between">
-          <span style="color:#909399;font-size:13px">共 {{ filteredKeywords.length }} 条</span>
-          <el-button type="primary" size="small" @click="showKeywordDialog('add')" :disabled="readOnly">新增</el-button>
-        </div>
-        <el-table :data="filteredKeywords" stripe size="small" v-loading="kwLoading" :max-height="tableMaxHeight" style="width:100%">
-          <el-table-column prop="id" label="ID" width="60" />
-          <el-table-column prop="keyword" label="关键词" width="200" />
-          <el-table-column prop="category_id" label="分类规则ID" width="100" />
-          <el-table-column prop="sub_category" label="子类别" width="120" />
-          <el-table-column prop="problem" label="关联问题" show-overflow-tooltip />
-          <el-table-column label="操作" width="160" fixed="right">
-            <template #default="{row}">
-              <el-button link type="primary" size="small" @click="showKeywordDialog('edit', row)" :disabled="readOnly">编辑</el-button>
-              <el-button link type="danger" size="small" @click="delKeyword(row)" :disabled="readOnly">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="触发位置" name="locations">
-        <div style="margin-bottom:12px;display:flex;justify-content:space-between">
-          <span style="color:#909399;font-size:13px">共 {{ filteredLocations.length }} 条</span>
-          <el-button type="primary" size="small" @click="showLocationDialog('add')" :disabled="readOnly">新增</el-button>
-        </div>
-        <el-table :data="filteredLocations" stripe size="small" v-loading="locLoading" :max-height="tableMaxHeight" style="width:100%">
-          <el-table-column prop="id" label="ID" width="60" />
-          <el-table-column prop="location" label="位置" width="200" />
-          <el-table-column prop="category_id" label="分类规则ID" width="100" />
-          <el-table-column prop="sub_category" label="子类别" width="120" />
-          <el-table-column prop="problem" label="关联问题" show-overflow-tooltip />
-          <el-table-column label="操作" width="160" fixed="right">
-            <template #default="{row}">
-              <el-button link type="primary" size="small" @click="showLocationDialog('edit', row)" :disabled="readOnly">编辑</el-button>
-              <el-button link type="danger" size="small" @click="delLocation(row)" :disabled="readOnly">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="地址映射" name="address">
-        <div style="margin-bottom:12px;display:flex;justify-content:space-between">
-          <span style="color:#909399;font-size:13px">共 {{ filteredAddresses.length }} 条</span>
-          <el-button type="primary" size="small" @click="showAddrDialog('add')" :disabled="readOnly">新增</el-button>
-        </div>
-        <el-table :data="filteredAddresses" stripe v-loading="addrLoading" size="small" :max-height="tableMaxHeight" style="width:100%">
-          <el-table-column prop="id" label="ID" width="60" />
-          <el-table-column prop="community" label="小区名称" min-width="150" />
-          <el-table-column prop="street" label="街道" min-width="120" />
-          <el-table-column prop="property_company" label="物业公司" min-width="150" show-overflow-tooltip />
-          <el-table-column prop="maintenance_unit" label="维修单位" min-width="150" show-overflow-tooltip />
-          <el-table-column prop="district" label="区县" />
-          <el-table-column label="操作" width="160" fixed="right">
-            <template #default="{row}">
-              <el-button link type="primary" size="small" @click="showAddrDialog('edit', row)" :disabled="readOnly">编辑</el-button>
-              <el-button link type="danger" size="small" @click="delAddr(row)" :disabled="readOnly">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="人员管理" name="workers">
-        <div style="margin-bottom:12px;display:flex;justify-content:space-between">
-          <span style="color:#909399;font-size:13px">共 {{ filteredWorkers.length }} 条</span>
-          <el-button type="primary" size="small" @click="showWorkerDialog('add')" :disabled="readOnly">新增</el-button>
-        </div>
-        <el-table :data="filteredWorkers" stripe size="small" v-loading="wrkLoading" :max-height="tableMaxHeight" style="width:100%">
-          <el-table-column prop="id" label="ID" width="60" />
-          <el-table-column prop="name" label="姓名" min-width="100" />
-          <el-table-column prop="phone" label="电话" min-width="120" />
-          <el-table-column prop="company" label="所属公司" min-width="150" show-overflow-tooltip />
-          <el-table-column prop="department" label="部门" min-width="120" show-overflow-tooltip />
-          <el-table-column prop="certs" label="资质证书" show-overflow-tooltip />
-          <el-table-column label="操作" width="160" fixed="right">
-            <template #default="{row}">
-              <el-button link type="primary" size="small" @click="showWorkerDialog('edit', row)" :disabled="readOnly">编辑</el-button>
-              <el-button link type="danger" size="small" @click="delWorker(row)" :disabled="readOnly">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-    </el-tabs>
-
-    <el-dialog v-model="subDialog.visible" :title="subDialog.title" width="500px">
-      <el-form :model="subDialog.form">
-        <el-form-item label="子类别名称" required><el-input v-model="subDialog.form.sub_category" /></el-form-item>
-        <el-form-item label="描述"><el-input v-model="subDialog.form.description" type="textarea" :rows="4" /></el-form-item>
+    <!-- 新增 / 编辑 对话框 -->
+    <el-dialog
+      v-model="dialog.visible"
+      :title="dialog.title"
+      width="520px"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="dialog.form" label-width="110px">
+        <el-form-item
+          v-for="f in currentFields"
+          :key="f.prop"
+          :label="f.label"
+          :required="f.required"
+        >
+          <el-input-number
+            v-if="f.type === 'number'"
+            v-model="dialog.form[f.prop]"
+            :min="1"
+            style="width:100%"
+          />
+          <el-select v-else-if="f.type === 'select'" v-model="dialog.form[f.prop]" style="width:100%">
+            <el-option v-for="o in f.options" :key="o" :label="o" :value="o" />
+          </el-select>
+          <el-input
+            v-else
+            v-model="dialog.form[f.prop]"
+            :type="f.type === 'textarea' ? 'textarea' : 'text'"
+            :rows="f.rows || 3"
+            :disabled="f.disabledInEdit && dialog.mode === 'edit'"
+            :placeholder="f.placeholder"
+          />
+        </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="subDialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="saveSubcategory" :loading="subDialog.saving">保存</el-button>
-      </template>
-    </el-dialog>
-
-    <el-dialog v-model="catDialog.visible" :title="catDialog.title" width="600px">
-      <el-form :model="catDialog.form" label-width="110px">
-        <el-form-item label="规则ID" required><el-input-number v-model="catDialog.form.rule_id" :min="1" /></el-form-item>
-        <el-form-item label="维修类别" required><el-select v-model="catDialog.form.category" style="width:100%"><el-option label="应急维修" value="应急维修" /><el-option label="日常维修" value="日常维修" /></el-select></el-form-item>
-        <el-form-item label="子类别" required><el-input v-model="catDialog.form.sub_category" /></el-form-item>
-        <el-form-item label="问题" required><el-input v-model="catDialog.form.problem" /></el-form-item>
-        <el-form-item label="优先级"><el-input v-model="catDialog.form.priority" /></el-form-item>
-        <el-form-item label="资质证书"><el-input v-model="catDialog.form.required_cert" /></el-form-item>
-        <el-form-item label="目标部门"><el-input v-model="catDialog.form.target_dept_semantic" /></el-form-item>
-        <el-form-item label="详细描述"><el-input v-model="catDialog.form.description" type="textarea" :rows="3" /></el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="catDialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="saveCategory" :loading="catDialog.saving">保存</el-button>
-      </template>
-    </el-dialog>
-
-    <el-dialog v-model="kwDialog.visible" :title="kwDialog.title" width="500px">
-      <el-form :model="kwDialog.form">
-        <el-form-item label="关键词" required><el-input v-model="kwDialog.form.keyword" /></el-form-item>
-        <el-form-item label="关联分类规则ID" required v-if="kwDialog.mode === 'add'"><el-input-number v-model="kwDialog.form.category_id" :min="1" /></el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="kwDialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="saveKeyword" :loading="kwDialog.saving">保存</el-button>
-      </template>
-    </el-dialog>
-
-    <el-dialog v-model="locDialog.visible" :title="locDialog.title" width="500px">
-      <el-form :model="locDialog.form">
-        <el-form-item label="位置" required><el-input v-model="locDialog.form.location" /></el-form-item>
-        <el-form-item label="关联分类规则ID" required v-if="locDialog.mode === 'add'"><el-input-number v-model="locDialog.form.category_id" :min="1" /></el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="locDialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="saveLocation" :loading="locDialog.saving">保存</el-button>
-      </template>
-    </el-dialog>
-
-    <el-dialog v-model="addrDialog.visible" :title="addrDialog.mode === 'add' ? '新增地址映射' : '编辑地址映射'" width="500px">
-      <el-form :model="addrDialog.form">
-        <el-form-item label="小区名称" required v-if="addrDialog.mode === 'add'"><el-input v-model="addrDialog.form.community" /></el-form-item>
-        <el-form-item label="街道"><el-input v-model="addrDialog.form.street" /></el-form-item>
-        <el-form-item label="物业公司" required><el-input v-model="addrDialog.form.property_company" /></el-form-item>
-        <el-form-item label="维修单位"><el-input v-model="addrDialog.form.maintenance_unit" /></el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="addrDialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="saveAddr" :loading="addrDialog.saving">保存</el-button>
-      </template>
-    </el-dialog>
-
-    <el-dialog v-model="wrkDialog.visible" :title="wrkDialog.title" width="500px">
-      <el-form :model="wrkDialog.form">
-        <el-form-item label="姓名" required><el-input v-model="wrkDialog.form.name" /></el-form-item>
-        <el-form-item label="电话"><el-input v-model="wrkDialog.form.phone" /></el-form-item>
-        <el-form-item label="所属公司"><el-input v-model="wrkDialog.form.company" /></el-form-item>
-        <el-form-item label="部门"><el-input v-model="wrkDialog.form.department" /></el-form-item>
-        <el-form-item label="资质证书"><el-input v-model="wrkDialog.form.certs" type="textarea" :rows="2" /></el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="wrkDialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="saveWorker" :loading="wrkDialog.saving">保存</el-button>
+        <el-button @click="dialog.visible = false">取消</el-button>
+        <el-button type="primary" @click="saveCurrent" :loading="dialog.saving">保存</el-button>
       </template>
     </el-dialog>
   </div>
@@ -229,97 +120,390 @@
 <script>
 import api from '../api'
 
+const LEN = arr => (Array.isArray(arr) ? arr.length : 0)
+
 export default {
-  computed: {
-    tableMaxHeight() { return window.innerHeight - 310 },
-    filteredSubcategories() { return this.filterList(this.subcategories) },
-    filteredCategories() { return this.filterList(this.categories) },
-    filteredKeywords() { return this.filterList(this.keywords) },
-    filteredLocations() { return this.filterList(this.locations) },
-    filteredAddresses() { return this.filterList(this.addressItems) },
-    filteredWorkers() { return this.filterList(this.workers) },
-    filteredCount() {
-      const map = { subcategories: this.filteredSubcategories, categories: this.filteredCategories, keywords: this.filteredKeywords, locations: this.filteredLocations, address: this.filteredAddresses, workers: this.filteredWorkers }
-      return (map[this.activeTab] || []).length
-    },
-    rawCount() {
-      const map = { subcategories: this.subcategories, categories: this.categories, keywords: this.keywords, locations: this.locations, address: this.addressItems, workers: this.workers }
-      return (map[this.activeTab] || []).length
-    }
-  },
+  name: 'DBManagementView',
   data() {
     return {
       activeTab: 'subcategories',
       readOnly: true,
       searchKeyword: '',
+      tableMaxHeight: 460,
       subcategories: [], subLoading: false,
-      subDialog: { visible: false, title: '', mode: 'add', saving: false, editId: null, form: { sub_category: '', description: '' } },
       categories: [], catLoading: false,
-      catDialog: { visible: false, title: '', mode: 'add', saving: false, editId: null, form: { rule_id: 0, category: '应急维修', sub_category: '', problem: '', priority: '', required_cert: '', target_dept_semantic: '', description: '' } },
       keywords: [], kwLoading: false,
-      kwDialog: { visible: false, title: '', mode: 'add', saving: false, editId: null, form: { keyword: '', category_id: 0 } },
       locations: [], locLoading: false,
-      locDialog: { visible: false, title: '', mode: 'add', saving: false, editId: null, form: { location: '', category_id: 0 } },
       addressItems: [], addrLoading: false,
-      addrDialog: { visible: false, mode: 'add', saving: false, editId: null, form: { community: '', street: '', property_company: '', maintenance_unit: '' } },
       workers: [], wrkLoading: false,
-      wrkDialog: { visible: false, title: '', mode: 'add', saving: false, editId: null, form: { name: '', phone: '', company: '', department: '', certs: '' } }
+      dialog: { visible: false, title: '', mode: 'add', saving: false, editId: null, form: {} },
+      ruleOptions: [],
+      deletingId: null,
+      tabList: [
+        { key: 'subcategories', label: '子类别定义' },
+        { key: 'categories', label: '分类规则' },
+        { key: 'keywords', label: '触发关键词' },
+        { key: 'locations', label: '触发位置' },
+        { key: 'address', label: '地址映射' },
+        { key: 'workers', label: '人员管理' }
+      ],
+      // 每类资源的列、字段、接口配置
+      config: {
+        subcategories: {
+          list: 'subcategories', loading: 'subLoading',
+          columns: [
+            { prop: 'id', label: 'ID', width: 64 },
+            { prop: 'sub_category', label: '子类别名称', width: 180 },
+            { prop: 'description', label: '描述', minWidth: 200, tooltip: true }
+          ],
+          fields: [
+            { prop: 'sub_category', label: '子类别名称', required: true },
+            { prop: 'description', label: '描述', type: 'textarea', rows: 4 }
+          ],
+          add: d => api.adminAddSubcategory(d),
+          update: (id, d) => api.adminUpdateSubcategory(id, d),
+          del: id => api.adminDeleteSubcategory(id),
+          empty: { sub_category: '', description: '' },
+          nameOf: r => r.sub_category
+        },
+        categories: {
+          list: 'categories', loading: 'catLoading',
+          columns: [
+            { prop: 'id', label: 'ID', width: 64 },
+            { prop: 'rule_id', label: '规则ID', width: 80 },
+            { prop: 'category', label: '类别', width: 100 },
+            { prop: 'sub_category', label: '子类别', width: 120 },
+            { prop: 'problem', label: '问题', minWidth: 160, tooltip: true },
+            { prop: 'priority', label: '优先级', width: 90 },
+            { prop: 'target_dept_semantic', label: '目标部门', minWidth: 130 },
+            { prop: 'trigger_keywords', label: '关键词数', width: 90, align: 'center', formatter: r => LEN(r.trigger_keywords) },
+            { prop: 'trigger_location', label: '位置数', width: 80, align: 'center', formatter: r => LEN(r.trigger_location) }
+          ],
+          fields: [
+            { prop: 'rule_id', label: '规则ID', type: 'number', required: true },
+            { prop: 'category', label: '维修类别', type: 'select', options: ['应急维修', '日常维修'], required: true },
+            { prop: 'sub_category', label: '子类别', required: true },
+            { prop: 'problem', label: '问题', required: true },
+            { prop: 'priority', label: '优先级' },
+            { prop: 'required_cert', label: '资质证书' },
+            { prop: 'target_dept_semantic', label: '目标部门' },
+            { prop: 'description', label: '详细描述', type: 'textarea', rows: 3 }
+          ],
+          add: d => api.adminAddCategory(d),
+          update: (id, d) => api.adminUpdateCategory(id, d),
+          del: id => api.adminDeleteCategory(id),
+          empty: { rule_id: 0, category: '应急维修', sub_category: '', problem: '', priority: '', required_cert: '', target_dept_semantic: '', description: '' },
+          nameOf: r => r.problem
+        },
+        keywords: {
+          list: 'keywords', loading: 'kwLoading',
+          columns: [
+            { prop: 'id', label: 'ID', width: 64 },
+            { prop: 'keyword', label: '关键词', width: 200 },
+            { prop: 'category_id', label: '分类规则ID', width: 110 },
+            { prop: 'sub_category', label: '子类别', width: 130 },
+            { prop: 'problem', label: '关联问题', minWidth: 160, tooltip: true }
+          ],
+          fields: [
+            { prop: 'keyword', label: '关键词', required: true },
+            { prop: 'category_id', label: '关联分类规则ID', type: 'number', required: true, disabledInEdit: true }
+          ],
+          add: d => api.adminAddKeyword({ category_id: d.category_id, keyword: d.keyword }),
+          update: (id, d) => api.adminUpdateKeyword(id, { keyword: d.keyword }),
+          del: id => api.adminDeleteKeyword(id),
+          empty: { keyword: '', category_id: 0 },
+          nameOf: r => r.keyword
+        },
+        locations: {
+          list: 'locations', loading: 'locLoading',
+          columns: [
+            { prop: 'id', label: 'ID', width: 64 },
+            { prop: 'location', label: '位置', width: 200 },
+            { prop: 'category_id', label: '分类规则ID', width: 110 },
+            { prop: 'sub_category', label: '子类别', width: 130 },
+            { prop: 'problem', label: '关联问题', minWidth: 160, tooltip: true }
+          ],
+          fields: [
+            { prop: 'location', label: '位置', required: true },
+            { prop: 'category_id', label: '关联分类规则', type: 'rule', required: true, disabledInEdit: true }
+          ],
+          add: d => api.adminAddLocation({ category_id: d.category_id, location: d.location }),
+          update: (id, d) => api.adminUpdateLocation(id, { location: d.location }),
+          del: id => api.adminDeleteLocation(id),
+          empty: { location: '', category_id: 0 },
+          nameOf: r => r.location
+        },
+        address: {
+          list: 'addressItems', loading: 'addrLoading',
+          columns: [
+            { prop: 'id', label: 'ID', width: 64 },
+            { prop: 'community', label: '小区名称', minWidth: 160 },
+            { prop: 'street', label: '街道', minWidth: 130 },
+            { prop: 'property_company', label: '物业公司', minWidth: 160, tooltip: true },
+            { prop: 'maintenance_unit', label: '维修单位', minWidth: 160, tooltip: true },
+            { prop: 'district', label: '区县', minWidth: 100 }
+          ],
+          fields: [
+            { prop: 'community', label: '小区名称', required: true, disabledInEdit: true },
+            { prop: 'street', label: '街道' },
+            { prop: 'property_company', label: '物业公司', required: true },
+            { prop: 'maintenance_unit', label: '维修单位' }
+          ],
+          add: d => api.addAddressMapping(d),
+          update: (id, d) => api.updateAddressMapping(id, {
+            street: d.street,
+            property_company: d.property_company,
+            maintenance_unit: d.maintenance_unit
+          }),
+          del: id => api.deleteAddressMapping(id),
+          empty: { community: '', street: '', property_company: '', maintenance_unit: '' },
+          nameOf: r => r.community
+        },
+        workers: {
+          list: 'workers', loading: 'wrkLoading',
+          columns: [
+            { prop: 'id', label: 'ID', width: 64 },
+            { prop: 'name', label: '姓名', minWidth: 110 },
+            { prop: 'phone', label: '电话', minWidth: 130 },
+            { prop: 'company', label: '所属公司', minWidth: 160, tooltip: true },
+            { prop: 'department', label: '部门', minWidth: 130, tooltip: true },
+            { prop: 'certs', label: '资质证书', minWidth: 160, tooltip: true }
+          ],
+          fields: [
+            { prop: 'name', label: '姓名', required: true },
+            { prop: 'phone', label: '电话' },
+            { prop: 'company', label: '所属公司' },
+            { prop: 'department', label: '部门' },
+            { prop: 'certs', label: '资质证书', type: 'textarea', rows: 2 }
+          ],
+          add: d => api.adminAddWorker(d),
+          update: (id, d) => api.adminUpdateWorker(id, d),
+          del: id => api.adminDeleteWorker(id),
+          empty: { name: '', phone: '', company: '', department: '', certs: '' },
+          nameOf: r => r.name
+        }
+      }
     }
   },
-  mounted() { this.loadSubcategories() },
-  methods: {
-    toggleEdit() { this.readOnly = !this.readOnly; if (!this.readOnly) this.$message.warning('已启用编辑模式，请谨慎操作') },
-    doSearch() { /* 搜索由 computed 属性自动驱动，此方法用于按钮点击反馈 */ },
-    filterList(list) {
+  computed: {
+    cfg() { return this.config[this.activeTab] },
+    currentColumns() { return this.cfg.columns },
+    currentFields() { return this.cfg.fields },
+    currentLoading() { return this[this.cfg.loading] },
+    currentList() {
+      const list = this[this.cfg.list] || []
       if (!this.searchKeyword) return list
-      if (!list || !list.length) return list
       const kw = this.searchKeyword.toLowerCase()
-      return list.filter(item => {
-        return Object.values(item).some(v => {
+      return list.filter(item =>
+        Object.values(item).some(v => {
           if (v === null || v === undefined) return false
           if (Array.isArray(v)) return v.some(x => String(x).toLowerCase().includes(kw))
           return String(v).toLowerCase().includes(kw)
         })
+      )
+    },
+    filteredCount() { return this.currentList.length },
+    rawCount() { return (this[this.cfg.list] || []).length }
+  },
+  mounted() {
+    // 支持 /database?tab=workers 这类带页签参数的跳转
+    const q = this.$route.query
+    if (q.tab && this.tabList.some(t => t.key === q.tab)) this.activeTab = String(q.tab)
+    this.calcHeight()
+    window.addEventListener('resize', this.calcHeight)
+    this.loadCurrent()
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.calcHeight)
+  },
+  methods: {
+    calcHeight() {
+      this.tableMaxHeight = Math.max(280, window.innerHeight - 340)
+    },
+    toggleEdit() {
+      this.readOnly = !this.readOnly
+      if (!this.readOnly) this.$message.warning('已启用编辑模式，请谨慎操作')
+    },
+    switchTab(key) {
+      if (this.activeTab === key) return
+      this.activeTab = key
+      this.loadCurrent()
+    },
+    doSearch() { /* 搜索由 computed 驱动 */ },
+    clearSearch() { this.searchKeyword = '' },
+    async loadCurrent() {
+      const key = this.activeTab
+      this[this.cfg.loading] = true
+      try {
+        if (key === 'subcategories') this.subcategories = (await api.adminListSubcategories()) || []
+        else if (key === 'categories') this.categories = (await api.adminListCategories()) || []
+        else if (key === 'keywords') this.keywords = (await api.adminListKeywords()) || []
+        else if (key === 'locations') this.locations = (await api.adminListLocations()) || []
+        else if (key === 'address') this.addressItems = (await api.listAddressMappings()) || []
+        else if (key === 'workers') this.workers = (await api.adminListWorkers()) || []
+      } catch (e) {
+        this.$message.error(e.message || '加载失败')
+      } finally {
+        this[this.cfg.loading] = false
+      }
+    },
+    openAdd() {
+      this.dialog = {
+        visible: true,
+        mode: 'add',
+        title: '新增' + this.tabList.find(t => t.key === this.activeTab).label.replace(/定义|管理/, ''),
+        saving: false,
+        editId: null,
+        form: { ...this.cfg.empty }
+      }
+    },
+    openEdit(row) {
+      const form = { ...this.cfg.empty }
+      Object.keys(form).forEach(k => { if (row[k] !== undefined && row[k] !== null) form[k] = row[k] })
+      this.dialog = {
+        visible: true,
+        mode: 'edit',
+        title: '编辑记录',
+        saving: false,
+        editId: row.id,
+        form
+      }
+    },
+    async saveCurrent() {
+      const { mode, editId, form } = this.dialog
+      const required = this.currentFields.filter(f => f.required)
+      const missing = required.find(f => {
+        const v = form[f.prop]
+        return v === undefined || v === null || v === '' || v === 0
       })
+      if (missing) {
+        this.$message.warning(`请填写「${missing.label}」`)
+        return
+      }
+      this.dialog.saving = true
+      try {
+        if (mode === 'add') {
+          await this.cfg.add(form)
+          this.$message.success('添加成功')
+        } else {
+          await this.cfg.update(editId, form)
+          this.$message.success('更新成功')
+        }
+        this.dialog.visible = false
+        this.loadCurrent()
+      } catch (e) {
+        this.$message.error(e.message || '保存失败')
+      } finally {
+        this.dialog.saving = false
+      }
     },
-    onTabChange(name) {
-      if (name === 'subcategories') this.loadSubcategories()
-      else if (name === 'categories') this.loadCategories()
-      else if (name === 'keywords') this.loadKeywords()
-      else if (name === 'locations') this.loadLocations()
-      else if (name === 'address') this.loadAddresses()
-      else if (name === 'workers') this.loadWorkers()
-    },
-    // --- 子类别 ---
-    async loadSubcategories() { this.subLoading = true; try { this.subcategories = await api.adminListSubcategories() } catch (e) { this.$message.error(e.message) } finally { this.subLoading = false } },
-    showSubcategoryDialog(mode, row) { this.subDialog.mode = mode; this.subDialog.editId = mode === 'edit' ? row.id : null; this.subDialog.title = mode === 'add' ? '新增子类别' : '编辑子类别'; this.subDialog.form = mode === 'add' ? { sub_category: '', description: '' } : { sub_category: row.sub_category || '', description: row.description || '' }; this.subDialog.visible = true },
-    async saveSubcategory() { const { mode, editId, form } = this.subDialog; if (!form.sub_category) { this.$message.warning('请输入子类别名称'); return } this.subDialog.saving = true; try { if (mode === 'add') { await api.adminAddSubcategory(form); this.$message.success('添加成功') } else { await api.adminUpdateSubcategory(editId, form); this.$message.success('更新成功') } this.subDialog.visible = false; this.loadSubcategories() } catch (e) { this.$message.error(e.message) } finally { this.subDialog.saving = false } },
-    async delSubcategory(row) { try { await this.$confirm(`确认删除子类别 "${row.sub_category}"？`, '确认', { type: 'warning' }); await api.adminDeleteSubcategory(row.id); this.$message.success('已删除'); this.loadSubcategories() } catch (e) { if (e !== 'cancel') this.$message.error(e.message) } },
-    // --- 分类规则 ---
-    async loadCategories() { this.catLoading = true; try { this.categories = await api.adminListCategories() } catch (e) { this.$message.error(e.message) } finally { this.catLoading = false } },
-    showCategoryDialog(mode, row) { this.catDialog.mode = mode; this.catDialog.editId = mode === 'edit' ? row.id : null; this.catDialog.title = mode === 'add' ? '新增分类规则' : '编辑分类规则'; this.catDialog.form = mode === 'add' ? { rule_id: 0, category: '应急维修', sub_category: '', problem: '', priority: '', required_cert: '', target_dept_semantic: '', description: '' } : { rule_id: row.rule_id, category: row.category || '', sub_category: row.sub_category || '', problem: row.problem || '', priority: row.priority || '', required_cert: row.required_cert || '', target_dept_semantic: row.target_dept_semantic || '', description: row.description || '' }; this.catDialog.visible = true },
-    async saveCategory() { const { mode, editId, form } = this.catDialog; if (!form.rule_id || !form.category || !form.sub_category || !form.problem) { this.$message.warning('请填写必填项'); return } this.catDialog.saving = true; try { if (mode === 'add') { await api.adminAddCategory(form); this.$message.success('添加成功') } else { await api.adminUpdateCategory(editId, form); this.$message.success('更新成功') } this.catDialog.visible = false; this.loadCategories() } catch (e) { this.$message.error(e.message) } finally { this.catDialog.saving = false } },
-    async delCategory(row) { try { await this.$confirm(`确认删除分类规则"${row.problem}"？将同时删除关联的关键词和位置。`, '确认', { type: 'warning' }); await api.adminDeleteCategory(row.id); this.$message.success('已删除'); this.loadCategories() } catch (e) { if (e !== 'cancel') this.$message.error(e.message) } },
-    // --- 关键词 ---
-    async loadKeywords() { this.kwLoading = true; try { this.keywords = await api.adminListKeywords() } catch (e) { this.$message.error(e.message) } finally { this.kwLoading = false } },
-    showKeywordDialog(mode, row) { this.kwDialog.mode = mode; this.kwDialog.editId = mode === 'edit' ? row.id : null; this.kwDialog.title = mode === 'add' ? '新增关键词' : '编辑关键词'; this.kwDialog.form = mode === 'add' ? { keyword: '', category_id: 0 } : { keyword: row.keyword || '', category_id: row.category_id }; this.kwDialog.visible = true },
-    async saveKeyword() { const { mode, editId, form } = this.kwDialog; if (!form.keyword) { this.$message.warning('请输入关键词'); return } if (mode === 'add' && !form.category_id) { this.$message.warning('请输入关联分类规则ID'); return } this.kwDialog.saving = true; try { if (mode === 'add') { await api.adminAddKeyword({ category_id: form.category_id, keyword: form.keyword }); this.$message.success('添加成功') } else { await api.adminUpdateKeyword(editId, { keyword: form.keyword }); this.$message.success('更新成功') } this.kwDialog.visible = false; this.loadKeywords() } catch (e) { this.$message.error(e.message) } finally { this.kwDialog.saving = false } },
-    async delKeyword(row) { try { await this.$confirm(`确认删除关键词 "${row.keyword}"？`, '确认', { type: 'warning' }); await api.adminDeleteKeyword(row.id); this.$message.success('已删除'); this.loadKeywords() } catch (e) { if (e !== 'cancel') this.$message.error(e.message) } },
-    // --- 位置 ---
-    async loadLocations() { this.locLoading = true; try { this.locations = await api.adminListLocations() } catch (e) { this.$message.error(e.message) } finally { this.locLoading = false } },
-    showLocationDialog(mode, row) { this.locDialog.mode = mode; this.locDialog.editId = mode === 'edit' ? row.id : null; this.locDialog.title = mode === 'add' ? '新增位置' : '编辑位置'; this.locDialog.form = mode === 'add' ? { location: '', category_id: 0 } : { location: row.location || '', category_id: row.category_id }; this.locDialog.visible = true },
-    async saveLocation() { const { mode, editId, form } = this.locDialog; if (!form.location) { this.$message.warning('请输入位置'); return } if (mode === 'add' && !form.category_id) { this.$message.warning('请输入关联分类规则ID'); return } this.locDialog.saving = true; try { if (mode === 'add') { await api.adminAddLocation({ category_id: form.category_id, location: form.location }); this.$message.success('添加成功') } else { await api.adminUpdateLocation(editId, { location: form.location }); this.$message.success('更新成功') } this.locDialog.visible = false; this.loadLocations() } catch (e) { this.$message.error(e.message) } finally { this.locDialog.saving = false } },
-    async delLocation(row) { try { await this.$confirm(`确认删除位置 "${row.location}"？`, '确认', { type: 'warning' }); await api.adminDeleteLocation(row.id); this.$message.success('已删除'); this.loadLocations() } catch (e) { if (e !== 'cancel') this.$message.error(e.message) } },
-    // --- 地址映射 ---
-    async loadAddresses() { this.addrLoading = true; try { this.addressItems = await api.listAddressMappings() } catch (e) { this.$message.error(e.message) } finally { this.addrLoading = false } },
-    showAddrDialog(mode, row) { this.addrDialog.mode = mode; this.addrDialog.editId = mode === 'edit' ? row.id : null; this.addrDialog.form = mode === 'add' ? { community: '', street: '', property_company: '', maintenance_unit: '' } : { community: row.community || '', street: row.street || '', property_company: row.property_company || '', maintenance_unit: row.maintenance_unit || '' }; this.addrDialog.visible = true },
-    async saveAddr() { const { mode, editId, form } = this.addrDialog; if (mode === 'add' && (!form.community || !form.property_company)) { this.$message.warning('请填写必填项'); return } this.addrDialog.saving = true; try { if (mode === 'add') { await api.addAddressMapping(form); this.$message.success('添加成功') } else { await api.updateAddressMapping(editId, { street: form.street, property_company: form.property_company, maintenance_unit: form.maintenance_unit }); this.$message.success('更新成功') } this.addrDialog.visible = false; this.loadAddresses() } catch (e) { this.$message.error(e.message) } finally { this.addrDialog.saving = false } },
-    async delAddr(row) { try { await this.$confirm(`确认删除映射 ${row.community}？`, '确认', { type: 'warning' }); await api.deleteAddressMapping(row.id); this.$message.success('已删除'); this.loadAddresses() } catch (e) { if (e !== 'cancel') this.$message.error(e.message) } },
-    // --- 人员管理 ---
-    async loadWorkers() { this.wrkLoading = true; try { this.workers = await api.adminListWorkers() } catch (e) { this.$message.error(e.message) } finally { this.wrkLoading = false } },
-    showWorkerDialog(mode, row) { this.wrkDialog.mode = mode; this.wrkDialog.editId = mode === 'edit' ? row.id : null; this.wrkDialog.title = mode === 'add' ? '新增工人' : '编辑工人'; this.wrkDialog.form = mode === 'add' ? { name: '', phone: '', company: '', department: '', certs: '' } : { name: row.name || '', phone: row.phone || '', company: row.company || '', department: row.department || '', certs: row.certs || '' }; this.wrkDialog.visible = true },
-    async saveWorker() { const { mode, editId, form } = this.wrkDialog; if (!form.name) { this.$message.warning('请输入姓名'); return } this.wrkDialog.saving = true; try { if (mode === 'add') { await api.adminAddWorker(form); this.$message.success('添加成功') } else { await api.adminUpdateWorker(editId, form); this.$message.success('更新成功') } this.wrkDialog.visible = false; this.loadWorkers() } catch (e) { this.$message.error(e.message) } finally { this.wrkDialog.saving = false } },
-    async delWorker(row) { try { await this.$confirm(`确认删除工人 "${row.name}"？`, '确认', { type: 'warning' }); await api.adminDeleteWorker(row.id); this.$message.success('已删除'); this.loadWorkers() } catch (e) { if (e !== 'cancel') this.$message.error(e.message) } }
+    async openDelete(row) {
+      if (this.deletingId !== null) return
+      const name = this.cfg.nameOf(row) || `#${row.id}`
+      try {
+        await this.$confirm(`确认删除「${name}」？该操作不可撤销。`, '确认删除', { type: 'warning' })
+      } catch (e) {
+        return
+      }
+      this.deletingId = row.id
+      try {
+        await this.cfg.del(row.id)
+        this.$message.success('已删除')
+        await this.loadCurrent()
+      } catch (e) {
+        this.$message.error(e.message || '删除失败')
+      } finally {
+        this.deletingId = null
+      }
+    }
   }
 }
 </script>
+
+<style scoped>
+.db-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 420px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: #fafbfd;
+  transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.search:focus-within {
+  border-color: var(--brand);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--brand-ring);
+}
+.search__icon { color: var(--ink-400); }
+.search__input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink-800);
+  font: inherit;
+  font-size: 13px;
+}
+.search__clear {
+  border: 0;
+  background: none;
+  color: var(--ink-400);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+.search__clear:hover { color: var(--ink-700); }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 16px 0;
+  border-bottom: 1px solid var(--line-soft);
+  overflow-x: auto;
+}
+.tab {
+  position: relative;
+  padding: 8px 14px 12px;
+  border: 0;
+  background: none;
+  color: var(--ink-500);
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.18s var(--ease);
+}
+.tab:hover { color: var(--ink-800); }
+.tab.is-active { color: var(--brand); font-weight: 600; }
+.tab.is-active::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--brand);
+}
+
+.table-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+.card-head__hint { color: var(--ink-400); font-size: 12px; }
+.ops { display: flex; justify-content: flex-end; gap: 2px; }
+</style>

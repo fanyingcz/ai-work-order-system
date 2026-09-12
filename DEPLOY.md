@@ -59,8 +59,9 @@ python api.py
 #      http://localhost:8000/docs
 ```
 
-⚠️ 数据库密码现在从 `.env` 读——如果启动时连不上库，检查 `.env` 是否在、
-`DB_PASSWORD` 是否正确（原来硬编码的那个值已经写进去了）。
+> [!IMPORTANT]
+> 数据库密码现在从 `.env` 读——如果启动时连不上库，检查 `.env` 是否在、
+> `DB_PASSWORD` 是否正确（原来硬编码的那个值已经写进去了）。
 
 ### 跑法 B：本地 Docker（推荐，最贴近云端）
 

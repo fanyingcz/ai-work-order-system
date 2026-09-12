@@ -173,10 +173,11 @@ taxonomy can be edited without redeploying.
 
 ## Sample data
 
-`data/test_data/` contains **18 tickets** — a small but representative slice
+`data/test_data/` contains **10 tickets** — a small but representative slice
 spanning seven service categories (electrical, drain cleaning, plumbing,
 appliance repair, appliance cleaning, toilet fitting, doors and windows) and
-all three intake channels. That is enough to exercise the classification
+both intake channels present in the data (962121 and Huxiaojia). That is
+enough to exercise the classification
 pipeline and run the matching tests without shipping a full operational
 dataset.
 

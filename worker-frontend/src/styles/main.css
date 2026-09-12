@@ -1,0 +1,157 @@
+/* ============================================================
+   智能工单系统 · 维修工人端设计系统
+   ============================================================ */
+
+:root {
+  --brand: #4f46e5;
+  --brand-600: #4338ca;
+  --brand-soft: #eef2ff;
+  --brand-ring: rgba(79, 70, 229, 0.18);
+
+  --ink-900: #0f172a;
+  --ink-800: #1e293b;
+  --ink-700: #334155;
+  --ink-500: #64748b;
+  --ink-400: #94a3b8;
+  --line: #e6eaf2;
+  --line-soft: #f0f2f7;
+  --surface: #ffffff;
+  --canvas: #f5f7fb;
+
+  --ok: #10b981;
+  --ok-soft: #ecfdf5;
+  --warn: #f59e0b;
+  --warn-soft: #fffbeb;
+  --danger: #ef4444;
+  --danger-soft: #fef2f2;
+  --info: #3b82f6;
+  --info-soft: #eff6ff;
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.03);
+  --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.12);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 0.22s;
+
+  --el-color-primary: var(--brand);
+  --el-color-success: var(--ok);
+  --el-color-warning: var(--warn);
+  --el-color-danger: var(--danger);
+  --el-border-radius-base: 10px;
+  --el-border-radius-small: 8px;
+  --el-font-family: inherit;
+  --el-border-color: var(--line);
+  --el-border-color-light: var(--line);
+  --el-border-color-lighter: var(--line-soft);
+  --el-text-color-primary: var(--ink-800);
+  --el-text-color-regular: var(--ink-700);
+  --el-text-color-secondary: var(--ink-500);
+  --el-text-color-placeholder: var(--ink-400);
+}
+
+* { box-sizing: border-box; }
+
+html, body, #app { min-height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink-800);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { margin: 0; color: var(--ink-900); font-weight: 600; }
+p { margin: 0; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #d8dde8; border-radius: 99px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* 通用 chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip--dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 99px;
+  background: currentColor;
+}
+.chip--brand { color: var(--brand); background: var(--brand-soft); }
+.chip--ok { color: #047857; background: var(--ok-soft); }
+.chip--warn { color: #b45309; background: var(--warn-soft); }
+.chip--danger { color: #b91c1c; background: var(--danger-soft); }
+.chip--info { color: #1d4ed8; background: var(--info-soft); }
+.chip--muted { color: var(--ink-500); background: #f1f4f9; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+
+.mono { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
+
+.empty { padding: 48px 20px; text-align: center; color: var(--ink-400); }
+.empty__icon { font-size: 30px; opacity: 0.55; }
+.empty__text { margin-top: 6px; font-size: 13px; }
+
+.el-button { font-weight: 500; transition: transform 0.16s var(--ease), box-shadow var(--dur) var(--ease); }
+.el-button:active { transform: translateY(1px); }
+.el-button--primary { box-shadow: 0 4px 12px rgba(79, 70, 229, 0.22); }
+
+.el-input__wrapper,
+.el-textarea__inner {
+  box-shadow: 0 0 0 1px var(--line) inset !important;
+  border-radius: var(--r-md) !important;
+  transition: box-shadow var(--dur) var(--ease) !important;
+}
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--brand) inset, 0 0 0 3px var(--brand-ring) !important;
+}
+
+.el-dialog { border-radius: var(--r-xl) !important; overflow: hidden; }
+.el-dialog__header { padding: 18px 22px 8px !important; }
+.el-dialog__title { font-weight: 600; color: var(--ink-900); }
+
+.el-tag { border-radius: 7px !important; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.96) translateY(6px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes blink { 0%, 100% { opacity: .25 } 50% { opacity: 1 } }
+
+.anim-fade-up { animation: fade-up 0.34s var(--ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

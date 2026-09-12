@@ -23,11 +23,43 @@
 
 import json
 import os
+import threading
 import pymysql
 from pymysql.cursors import DictCursor
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from contextlib import contextmanager
+
+
+# SET 子句的字段名无法用 %s 参数化（pymysql 只能参数化值），只能 f-string 拼接。
+# 因此拼接前必须把键名收进白名单，否则外部可控的 dict 键就是一个注入点。
+# 当前所有调用点都受 Pydantic 模型约束，加白名单是纵深防御——防止以后有人
+# 直接把 request.json() 传进来。
+_UPDATABLE_WORK_ORDER_FIELDS = frozenset({
+    'accept_time', 'user_input', 'sub_category', 'problem', 'property_company',
+    'maintenance_unit', 'priority', 'required_cert', 'target_dept_semantic',
+    'status', 'address', 'reporter_name', 'reporter_phone', 'worker_id',
+})
+
+_UPDATABLE_CATEGORY_FIELDS = frozenset({
+    'rule_id', 'category', 'sub_category', 'problem', 'priority',
+    'required_cert', 'target_dept_semantic', 'description',
+})
+
+
+def _filter_updatable(update_data: Dict[str, Any],
+                      allowed: frozenset,
+                      label: str) -> Dict[str, Any]:
+    """按白名单过滤待更新字段，并把被丢弃的键打出来（避免静默丢更新）"""
+    fields, dropped = {}, []
+    for key, value in update_data.items():
+        if key in allowed:
+            fields[key] = value
+        else:
+            dropped.append(key)
+    if dropped:
+        print(f"[WorkOrderDB] {label}: 忽略不在白名单内的字段 {dropped}")
+    return fields
 
 
 class WorkOrderDB:
@@ -47,12 +79,19 @@ class WorkOrderDB:
     """
 
     _instance = None
+    _cls_lock = threading.Lock()
 
     def __new__(cls, *args, **kwargs):
-        """单例模式，确保全局只有一个数据库连接管理器"""
+        """单例模式，确保全局只有一个数据库连接管理器
+
+        加锁原因：api.py 的测试任务会并发起 3~10 个线程，无锁版本的
+        `if cls._instance is None` 竞态下可能造出两个实例，各自建表。
+        """
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
+            with cls._cls_lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+                    cls._instance._initialized = False
         return cls._instance
 
     def __init__(self, host: str = None, port: int = None,
@@ -71,7 +110,10 @@ class WorkOrderDB:
         self.charset = charset
         # TLS 参数（云端托管库如 TiDB Cloud 强制要求加密连接）
         self._ssl_kwargs = self._build_ssl_kwargs()
-        self._connection = None
+        # 每线程一条连接。pymysql 的 Connection 不是线程安全的：单例共享一条
+        # 连接时，并发测试任务的多个线程会互相踩对方的收发缓冲，表现为
+        # "Packet sequence number wrong" 或查询返回别人的结果集。
+        self._tls = threading.local()
         self._initialized = True
 
         # 自动创建数据库和表，并迁移已有表结构
@@ -110,9 +152,17 @@ class WorkOrderDB:
         )
 
     def _get_connection(self):
-        """获取到目标数据库的连接"""
-        if self._connection is None or not self._connection.open:
-            self._connection = pymysql.connect(
+        """获取到目标数据库的连接（每个调用线程一条，互不干扰）"""
+        conn = getattr(self._tls, 'conn', None)
+        if conn is not None and conn.open:
+            try:
+                # 服务端 wait_timeout 会静默断开空闲连接，取用前先探活
+                conn.ping(reconnect=True)
+                return conn
+            except Exception:
+                conn = None
+        if conn is None:
+            conn = pymysql.connect(
                 host=self.host,
                 port=self.port,
                 user=self.user,
@@ -123,7 +173,8 @@ class WorkOrderDB:
                 autocommit=True,
                 **self._ssl_kwargs
             )
-        return self._connection
+            self._tls.conn = conn
+        return conn
 
     def _ensure_database(self):
         """确保数据库 AI_Work_Order 存在，不存在则创建"""
@@ -182,6 +233,10 @@ class WorkOrderDB:
         migrations = [
             ("reporter_name", "VARCHAR(100) COMMENT '报修人姓名'"),
             ("reporter_phone", "VARCHAR(30) COMMENT '报修人联系电话'"),
+            # 派单用的指派工人。建表语句里没有这一列，历史库是靠
+            # tools/init_workers.py 补的——那个脚本要读 data/rules 才会走到
+            # ALTER，一旦因故没跑，整条派单链路就废了。这里做正规幂等迁移兜底。
+            ("worker_id", "INT DEFAULT NULL COMMENT '指派的维修工人ID'"),
         ]
         try:
             conn = self._get_connection()
@@ -193,6 +248,17 @@ class WorkOrderDB:
                     if col_name not in existing_cols:
                         cursor.execute(f"ALTER TABLE `work_orders` ADD COLUMN `{col_name}` {col_def}")
                         print(f"[WorkOrderDB] 迁移: 添加列 {col_name} 到 work_orders 表")
+
+                # worker_id 索引：先查再建，避免重复执行时报错
+                cursor.execute(
+                    "SELECT COUNT(*) AS cnt FROM information_schema.statistics "
+                    "WHERE table_schema = DATABASE() AND table_name = 'work_orders' "
+                    "AND index_name = 'idx_worker_id'"
+                )
+                if not cursor.fetchone()['cnt']:
+                    cursor.execute(
+                        "ALTER TABLE `work_orders` ADD INDEX `idx_worker_id` (`worker_id`)")
+                    print("[WorkOrderDB] 迁移: 添加索引 idx_worker_id")
         except Exception as e:
             print(f"[WorkOrderDB] 迁移 work_orders 表失败 (可忽略): {e}")
 
@@ -811,7 +877,7 @@ class WorkOrderDB:
 
     def update_category(self, record_id: int, data: dict) -> int:
         """更新分类规则"""
-        fields = {k: v for k, v in data.items() if k not in ('id', 'created_at')}
+        fields = _filter_updatable(data, _UPDATABLE_CATEGORY_FIELDS, 'update_category')
         if not fields:
             return 0
         set_clause = ", ".join([f"`{k}` = %s" for k in fields.keys()])
@@ -1275,8 +1341,8 @@ class WorkOrderDB:
             return 0
 
         # 过滤掉不应该更新的字段
-        skip_fields = {'id', 'order_no', 'created_at'}
-        fields = {k: v for k, v in update_data.items() if k not in skip_fields}
+        fields = _filter_updatable(update_data, _UPDATABLE_WORK_ORDER_FIELDS,
+                                   'update_by_order_no')
 
         if not fields:
             return 0
@@ -1309,8 +1375,8 @@ class WorkOrderDB:
         if not update_data:
             return 0
 
-        skip_fields = {'id', 'order_no', 'created_at'}
-        fields = {k: v for k, v in update_data.items() if k not in skip_fields}
+        fields = _filter_updatable(update_data, _UPDATABLE_WORK_ORDER_FIELDS,
+                                   'update_by_id')
 
         if not fields:
             return 0
@@ -1530,14 +1596,28 @@ class WorkOrderDB:
             return row['last_seq'] if row else 1
 
     def close(self):
-        """关闭数据库连接"""
-        if self._connection and self._connection.open:
-            self._connection.close()
-            self._connection = None
+        """关闭当前线程的数据库连接
+
+        只影响调用方所在线程：别的线程的连接由各自的 threading.local
+        持有，进程退出时随线程一起回收。
+        """
+        tls = getattr(self, '_tls', None)
+        if tls is None:
+            return
+        conn = getattr(tls, 'conn', None)
+        if conn is not None and conn.open:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        tls.conn = None
 
     def __del__(self):
-        """析构时自动关闭连接"""
-        self.close()
+        """析构时自动关闭当前线程的连接"""
+        try:
+            self.close()
+        except Exception:
+            pass
 
 
 def get_db(host: str = None, port: int = None,

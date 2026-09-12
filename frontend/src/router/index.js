@@ -26,16 +26,16 @@ const routes = [
     meta: { title: '反馈管理' }
   },
   {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import('../views/DashboardView.vue'),
+    meta: { title: '数据看板' }
+  },
+  {
     path: '/test',
     name: 'Test',
     component: () => import('../views/TestView.vue'),
     meta: { title: '模型测试' }
-  },
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('../views/DashboardView.vue'),
-    meta: { title: '系统仪表盘' }
   },
   {
     path: '/database',
@@ -48,12 +48,25 @@ const routes = [
     name: 'Prompts',
     component: () => import('../views/PromptManagerView.vue'),
     meta: { title: '提示词管理' }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  // 切页后回到顶部，否则长列表页之间跳转会停在半空
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+    return { top: 0 }
+  }
+})
+
+router.afterEach(to => {
+  document.title = `${to.meta.title || '控制台'} · 智能工单系统`
 })
 
 export default router

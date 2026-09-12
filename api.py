@@ -1396,16 +1396,14 @@ async def get_all_feedbacks(
     """
     try:
         fh = FeedbackHandler()
-        data = fh.get_all(limit=limit, offset=(page-1)*limit)
-        
-        # 按状态筛选
-        if status:
-            data = [item for item in data if item.get('status') == status]
-        
+        # 状态筛选下推到 SQL，避免「先分页再筛选」导致条数与页码失真
+        data = fh.get_all(limit=limit, offset=(page-1)*limit, status=status)
+
         return success_response(data={
             "items": data,
             "page": page,
-            "limit": limit
+            "limit": limit,
+            "total": fh.count(status=status)
         })
     except Exception as e:
         return error_response(message=f"查询失败: {str(e)}", code=1500)

@@ -88,7 +88,9 @@ def ensure_workers(force: bool = False, base_dir: str = None) -> int:
         print(f"worker_id column already exists (or other error): {e}")
 
     c.execute("SELECT COUNT(*) as cnt FROM workers")
-    return c.fetchone()['cnt']
+    total = c.fetchone()['cnt']
+    c.close()
+    return total
 
 
 if __name__ == "__main__":

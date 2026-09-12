@@ -20,7 +20,12 @@ http.interceptors.response.use(
     }
   },
   error => {
-    return Promise.reject(error)
+    // 统一成带可读 message 的 Error，供页面直接展示
+    const data = error?.response?.data
+    const raw = (data && (data.message || data.detail)) || error.message || '网络错误'
+    const err = new Error(Array.isArray(raw) ? JSON.stringify(raw) : raw)
+    err.status = error?.response?.status
+    return Promise.reject(err)
   }
 )
 

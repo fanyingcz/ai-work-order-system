@@ -91,19 +91,47 @@ class FeedbackHandler:
             print(f"[FeedbackHandler] get_pending failed: {e}")
             return []
 
-    def get_all(self, limit: int = 100, offset: int = 0) -> List[Dict[str, Any]]:
-        """Get all feedbacks with pagination."""
+    def get_all(self, limit: int = 100, offset: int = 0,
+                status: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Get all feedbacks with pagination.
+
+        status 过滤必须在 SQL 里做：如果在取回一页之后再按状态筛，
+        返回条数会少于 limit，且 total 与页码都会被算错。
+        """
         try:
             db = get_db()
             conn = db._get_connection()
             with conn.cursor() as cursor:
-                cursor.execute(
-                    "SELECT * FROM error_feedbacks ORDER BY created_at DESC LIMIT %s OFFSET %s",
-                    (limit, offset))
+                if status:
+                    cursor.execute(
+                        "SELECT * FROM error_feedbacks WHERE status=%s "
+                        "ORDER BY created_at DESC LIMIT %s OFFSET %s",
+                        (status, limit, offset))
+                else:
+                    cursor.execute(
+                        "SELECT * FROM error_feedbacks ORDER BY created_at DESC LIMIT %s OFFSET %s",
+                        (limit, offset))
                 return cursor.fetchall()
         except Exception as e:
             print(f"[FeedbackHandler] get_all failed: {e}")
             return []
+
+    def count(self, status: Optional[str] = None) -> int:
+        """Count feedback rows, optionally within one status. Used for pagination total."""
+        try:
+            db = get_db()
+            conn = db._get_connection()
+            with conn.cursor() as cursor:
+                if status:
+                    cursor.execute(
+                        "SELECT COUNT(*) AS n FROM error_feedbacks WHERE status=%s", (status,))
+                else:
+                    cursor.execute("SELECT COUNT(*) AS n FROM error_feedbacks")
+                return cursor.fetchone()['n']
+        except Exception as e:
+            print(f"[FeedbackHandler] count failed: {e}")
+            return 0
 
     def get_by_id(self, feedback_id: int) -> Optional[Dict[str, Any]]:
         """Get a single feedback by id."""

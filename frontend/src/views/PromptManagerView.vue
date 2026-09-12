@@ -1,180 +1,184 @@
 <template>
-  <div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <h2 style="margin:0">提示词管理</h2>
-      <div style="display:flex;gap:8px">
-        <el-button type="success" size="small" @click="reloadPrompts" :loading="reloading">热重载</el-button>
-        <el-button :type="readOnly ? 'warning' : 'danger'" size="small" @click="toggleEdit">
+  <div class="page">
+    <div class="page-head pm-head">
+      <div>
+        <h2 class="page-title">提示词管理</h2>
+        <p class="page-desc">版本 {{ promptsData.version || '-' }} · 修改后需热重载才会对运行中的服务生效</p>
+      </div>
+      <div class="pm-head__actions">
+        <el-button type="success" size="small" plain @click="reloadPrompts" :loading="reloading">热重载</el-button>
+        <el-button :type="readOnly ? 'warning' : 'danger'" size="small" plain @click="toggleEdit">
           {{ readOnly ? '启用编辑' : '锁定编辑' }}
         </el-button>
       </div>
     </div>
 
-    <div v-if="loading" style="text-align:center;padding:40px">
-      <el-icon class="is-loading" :size="32"><Loading /></el-icon>
-      <p>加载提示词配置中...</p>
+    <div v-if="loading" class="card card--pad loading-box">
+      <el-icon class="is-loading" :size="26"><Loading /></el-icon>
+      <p>正在加载提示词配置…</p>
     </div>
 
-    <div v-else>
-      <el-alert :title="`配置版本: ${promptsData.version || '-'}   |   提示：点击右上角「启用编辑」后方可修改`" type="info" :closable="false" style="margin-bottom:12px" />
+    <div v-else class="card">
+      <div class="tabs">
+        <button
+          v-for="t in tabs"
+          :key="t.key"
+          class="tab"
+          :class="{ 'is-active': activeTab === t.key }"
+          @click="activeTab = t.key"
+        >{{ t.label }}</button>
+      </div>
 
-      <el-tabs v-model="activeTab" type="border-card">
-        <!-- ========== Step1 ========== -->
-        <el-tab-pane label="Step1 - SubCategory 选取" name="step1">
-          <!-- system_role -->
-          <el-divider content-position="left">系统角色 (system_role)</el-divider>
-          <el-input
-            v-model="editStep1.system_role"
-            type="textarea"
-            :rows="3"
-            :disabled="readOnly"
-            style="max-width:900px"
-          />
-          <div style="margin:8px 0 20px 0">
-            <el-button size="small" type="primary" @click="saveField('step1.system_role', editStep1.system_role)" :disabled="readOnly">保存</el-button>
-          </div>
+      <div class="card-body pm-body">
+        <!-- Step1 -->
+        <div v-show="activeTab === 'step1'" class="anim-fade-up">
+          <section class="section">
+            <header class="section__head">
+              <h4>系统角色</h4>
+              <el-button size="small" type="primary" :disabled="readOnly" @click="saveField('step1.system_role', editStep1.system_role)">保存</el-button>
+            </header>
+            <el-input v-model="editStep1.system_role" type="textarea" :rows="3" :disabled="readOnly" />
+          </section>
 
-          <!-- thinking_steps -->
-          <el-divider content-position="left">思考步骤 (thinking_steps)</el-divider>
-          <div v-for="(step, i) in editStep1.thinking_steps" :key="'ts-'+i" style="margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;max-width:1000px">
-            <span style="min-width:28px;color:#909399;line-height:32px;font-weight:bold;text-align:right">{{ i + 1 }}.</span>
-            <el-input
-              v-model="editStep1.thinking_steps[i]"
-              type="textarea"
-              :rows="step.length > 60 ? 3 : 2"
-              :disabled="readOnly"
-              style="flex:1"
-            />
-            <el-button v-if="!readOnly" size="small" type="danger" @click="removeArrayItem(editStep1.thinking_steps, i)" style="align-self:center">删除</el-button>
-          </div>
-          <div style="margin:8px 0;display:flex;gap:8px">
-            <el-button v-if="!readOnly" size="small" @click="editStep1.thinking_steps.push('')">+ 添加思考步骤</el-button>
-            <el-button v-if="!readOnly" size="small" type="primary" @click="saveField('step1.thinking_steps', editStep1.thinking_steps)">保存全部</el-button>
-          </div>
-
-          <!-- tasks -->
-          <el-divider content-position="left">任务列表 (tasks) — 动态遍历，支持任意数量</el-divider>
-          <div v-for="(val, key) in editStep1.tasks" :key="'tk-'+key" style="margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;max-width:1000px">
-            <span style="min-width:70px;font-weight:bold;color:#409EFF;line-height:32px">{{ key }}</span>
-            <el-input
-              v-model="editStep1.tasks[key]"
-              type="textarea"
-              :rows="2"
-              :disabled="readOnly"
-              style="flex:1"
-            />
-            <el-button v-if="!readOnly" size="small" type="primary" @click="saveTask(key, editStep1.tasks[key])" style="align-self:center">保存</el-button>
-          </div>
-          <div v-if="!readOnly" style="margin:8px 0;display:flex;gap:8px;align-items:center">
-            <el-input v-model="newTaskKey" placeholder="键名，如 task5" size="small" style="max-width:140px" />
-            <el-input v-model="newTaskValue" placeholder="任务描述" size="small" style="max-width:500px" />
-            <el-button size="small" type="success" @click="addTask">添加任务</el-button>
-          </div>
-
-          <!-- notes -->
-          <el-divider content-position="left">注意事项 (notes)</el-divider>
-          <div v-for="(note, i) in editStep1.notes" :key="'nt-'+i" style="margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;max-width:1000px">
-            <span style="min-width:28px;color:#909399;line-height:32px;font-weight:bold;text-align:right">{{ i + 1 }}.</span>
-            <el-input
-              v-model="editStep1.notes[i]"
-              type="textarea"
-              :rows="note.length > 60 ? 3 : 2"
-              :disabled="readOnly"
-              style="flex:1"
-            />
-            <el-button v-if="!readOnly" size="small" type="danger" @click="removeArrayItem(editStep1.notes, i)" style="align-self:center">删除</el-button>
-          </div>
-          <div style="margin:8px 0;display:flex;gap:8px">
-            <el-button v-if="!readOnly" size="small" @click="editStep1.notes.push('')">+ 添加注意事项</el-button>
-            <el-button v-if="!readOnly" size="small" type="primary" @click="saveField('step1.notes', editStep1.notes)">保存全部</el-button>
-          </div>
-        </el-tab-pane>
-
-        <!-- ========== Step2 ========== -->
-        <el-tab-pane label="Step2 - 关键词匹配" name="step2">
-          <!-- system_role -->
-          <el-divider content-position="left">系统角色 (system_role)</el-divider>
-          <el-input v-model="editStep2.system_role" type="textarea" :rows="3" :disabled="readOnly" style="max-width:900px" />
-          <div style="margin:8px 0 20px 0">
-            <el-button size="small" type="primary" @click="saveField('step2.system_role', editStep2.system_role)" :disabled="readOnly">保存</el-button>
-          </div>
-
-          <!-- thinking_step descriptions -->
-          <el-divider content-position="left">思考步骤描述</el-divider>
-          <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;max-width:700px">
-            <span style="min-width:80px;font-weight:bold;color:#409EFF">第1步:</span>
-            <el-input v-model="editStep2.thinking_step1_description" size="small" :disabled="readOnly" style="flex:1" />
-          </div>
-          <div style="margin-bottom:12px;display:flex;gap:10px;align-items:center;max-width:700px">
-            <span style="min-width:80px;font-weight:bold;color:#409EFF">第2步:</span>
-            <el-input v-model="editStep2.thinking_step2_description" size="small" :disabled="readOnly" style="flex:1" />
-          </div>
-          <el-button size="small" type="primary" :disabled="readOnly" @click="saveThinkingSteps">保存思考步骤</el-button>
-          <div style="height:16px"></div>
-
-          <!-- classification_rules — 每条独立、宽文本区 -->
-          <el-divider content-position="left">分类规则 (classification_rules) — 共 {{ editStep2.classification_rules.length }} 条</el-divider>
-          <div v-for="(rule, i) in editStep2.classification_rules" :key="'cr-'+i" style="margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;max-width:1100px">
-            <span style="min-width:36px;color:#909399;line-height:32px;font-weight:bold;text-align:right">#{{ i }}</span>
-            <el-input
-              v-model="editStep2.classification_rules[i]"
-              type="textarea"
-              :rows="rule.length > 80 ? 3 : 2"
-              :disabled="readOnly"
-              style="flex:1"
-            />
-            <div v-if="!readOnly" style="display:flex;flex-direction:column;gap:4px;min-width:60px">
-              <el-button size="small" type="primary" @click="saveRule(i, editStep2.classification_rules[i])">保存</el-button>
-              <el-button size="small" type="danger" @click="deleteRule(i)">删除</el-button>
+          <section class="section">
+            <header class="section__head">
+              <h4>思考步骤 · {{ editStep1.thinking_steps.length }} 条</h4>
+              <div class="section__tools">
+                <el-button size="small" v-if="!readOnly" @click="editStep1.thinking_steps.push('')">添加</el-button>
+                <el-button size="small" type="primary" v-if="!readOnly" @click="saveField('step1.thinking_steps', editStep1.thinking_steps)">保存全部</el-button>
+              </div>
+            </header>
+            <div v-for="(step, i) in editStep1.thinking_steps" :key="'ts-' + i" class="row">
+              <span class="row__idx">{{ i + 1 }}</span>
+              <el-input v-model="editStep1.thinking_steps[i]" type="textarea" :rows="2" :disabled="readOnly" />
+              <el-button v-if="!readOnly" size="small" type="danger" plain @click="removeArrayItem(editStep1.thinking_steps, i)">删除</el-button>
             </div>
-          </div>
-          <div v-if="!readOnly" style="margin:12px 0;display:flex;gap:10px;align-items:flex-start;max-width:1100px">
-            <span style="min-width:36px;color:#67C23A;font-weight:bold;line-height:32px">NEW</span>
-            <el-input v-model="newRuleText" placeholder="输入新规则文本..." type="textarea" :rows="3" style="flex:1" />
-            <el-button size="small" type="success" @click="addRule" style="align-self:center;min-width:60px">添加</el-button>
-          </div>
+          </section>
 
-          <!-- requirements -->
-          <el-divider content-position="left">输出要求 (requirements)</el-divider>
-          <div v-for="(req, i) in editStep2.requirements" :key="'rq-'+i" style="margin-bottom:10px;display:flex;gap:10px;align-items:center;max-width:800px">
-            <span style="min-width:28px;color:#909399;font-weight:bold;text-align:right">{{ i + 1 }}.</span>
-            <el-input v-model="editStep2.requirements[i]" size="small" :disabled="readOnly" style="flex:1" />
-            <el-button v-if="!readOnly" size="small" type="danger" :icon="'Delete'" circle @click="removeArrayItem(editStep2.requirements, i)" />
-          </div>
-          <div style="display:flex;gap:8px">
-            <el-button v-if="!readOnly" size="small" @click="editStep2.requirements.push('')">+ 添加要求</el-button>
-            <el-button v-if="!readOnly" size="small" type="primary" @click="saveField('step2.requirements', editStep2.requirements)">保存全部</el-button>
-          </div>
-          <div style="height:16px"></div>
+          <section class="section">
+            <header class="section__head">
+              <h4>任务列表 · {{ Object.keys(editStep1.tasks).length }} 条</h4>
+            </header>
+            <div v-for="(val, key) in editStep1.tasks" :key="'tk-' + key" class="row">
+              <span class="row__key">{{ key }}</span>
+              <el-input v-model="editStep1.tasks[key]" type="textarea" :rows="2" :disabled="readOnly" />
+              <el-button size="small" type="primary" v-if="!readOnly" @click="saveTask(key, editStep1.tasks[key])">保存</el-button>
+            </div>
+            <div v-if="!readOnly" class="row row--new">
+              <el-input v-model="newTaskKey" placeholder="键名，如 task5" size="small" class="row__newkey" />
+              <el-input v-model="newTaskValue" placeholder="任务描述" size="small" />
+              <el-button size="small" type="success" @click="addTask">添加任务</el-button>
+            </div>
+          </section>
 
-          <!-- location_selection_prompt -->
-          <el-divider content-position="left">位置选择提示模板 (location_selection_prompt)</el-divider>
-          <el-input v-model="editStep2.location_selection_prompt" type="textarea" :rows="3" :disabled="readOnly" style="max-width:900px" />
-          <div style="margin:8px 0 20px 0">
-            <el-button size="small" type="primary" @click="saveField('step2.location_selection_prompt', editStep2.location_selection_prompt)" :disabled="readOnly">保存</el-button>
-          </div>
+          <section class="section">
+            <header class="section__head">
+              <h4>注意事项 · {{ editStep1.notes.length }} 条</h4>
+              <div class="section__tools">
+                <el-button size="small" v-if="!readOnly" @click="editStep1.notes.push('')">添加</el-button>
+                <el-button size="small" type="primary" v-if="!readOnly" @click="saveField('step1.notes', editStep1.notes)">保存全部</el-button>
+              </div>
+            </header>
+            <div v-for="(note, i) in editStep1.notes" :key="'nt-' + i" class="row">
+              <span class="row__idx">{{ i + 1 }}</span>
+              <el-input v-model="editStep1.notes[i]" type="textarea" :rows="2" :disabled="readOnly" />
+              <el-button v-if="!readOnly" size="small" type="danger" plain @click="removeArrayItem(editStep1.notes, i)">删除</el-button>
+            </div>
+          </section>
+        </div>
 
-          <!-- location_requirements -->
-          <el-divider content-position="left">位置选择要求 (location_requirements)</el-divider>
-          <div v-for="(lr, i) in editStep2.location_requirements" :key="'lr-'+i" style="margin-bottom:10px;display:flex;gap:10px;align-items:center;max-width:800px">
-            <el-input v-model="editStep2.location_requirements[i]" size="small" :disabled="readOnly" style="flex:1" />
-            <el-button v-if="!readOnly" size="small" type="danger" :icon="'Delete'" circle @click="removeArrayItem(editStep2.location_requirements, i)" />
-          </div>
-          <div style="display:flex;gap:8px">
-            <el-button v-if="!readOnly" size="small" @click="editStep2.location_requirements.push('')">+ 添加</el-button>
-            <el-button v-if="!readOnly" size="small" type="primary" @click="saveField('step2.location_requirements', editStep2.location_requirements)">保存全部</el-button>
-          </div>
-        </el-tab-pane>
+        <!-- Step2 -->
+        <div v-show="activeTab === 'step2'" class="anim-fade-up">
+          <section class="section">
+            <header class="section__head">
+              <h4>系统角色</h4>
+              <el-button size="small" type="primary" :disabled="readOnly" @click="saveField('step2.system_role', editStep2.system_role)">保存</el-button>
+            </header>
+            <el-input v-model="editStep2.system_role" type="textarea" :rows="3" :disabled="readOnly" />
+          </section>
 
-        <!-- ========== JSON 原始预览 ========== -->
-        <el-tab-pane label="JSON 原始数据" name="json">
-          <div style="margin-bottom:8px;display:flex;gap:8px;align-items:center">
+          <section class="section">
+            <header class="section__head">
+              <h4>思考步骤</h4>
+              <el-button size="small" type="primary" :disabled="readOnly" @click="saveThinkingSteps">保存</el-button>
+            </header>
+            <div class="row">
+              <span class="row__key">第1步</span>
+              <el-input v-model="editStep2.thinking_step1_description" size="small" :disabled="readOnly" />
+            </div>
+            <div class="row">
+              <span class="row__key">第2步</span>
+              <el-input v-model="editStep2.thinking_step2_description" size="small" :disabled="readOnly" />
+            </div>
+          </section>
+
+          <section class="section">
+            <header class="section__head">
+              <h4>分类规则 · {{ editStep2.classification_rules.length }} 条</h4>
+            </header>
+            <div v-for="(rule, i) in editStep2.classification_rules" :key="'cr-' + i" class="row">
+              <span class="row__idx">#{{ i }}</span>
+              <el-input v-model="editStep2.classification_rules[i]" type="textarea" :rows="2" :disabled="readOnly" />
+              <div v-if="!readOnly" class="row__ops">
+                <el-button size="small" type="primary" @click="saveRule(i, editStep2.classification_rules[i])">保存</el-button>
+                <el-button size="small" type="danger" plain @click="deleteRule(i)">删除</el-button>
+              </div>
+            </div>
+            <div v-if="!readOnly" class="row row--new">
+              <span class="row__idx row__idx--new">NEW</span>
+              <el-input v-model="newRuleText" placeholder="输入新规则文本…" type="textarea" :rows="2" />
+              <el-button size="small" type="success" @click="addRule">添加</el-button>
+            </div>
+          </section>
+
+          <section class="section">
+            <header class="section__head">
+              <h4>输出要求 · {{ editStep2.requirements.length }} 条</h4>
+              <div class="section__tools">
+                <el-button size="small" v-if="!readOnly" @click="editStep2.requirements.push('')">添加</el-button>
+                <el-button size="small" type="primary" v-if="!readOnly" @click="saveField('step2.requirements', editStep2.requirements)">保存全部</el-button>
+              </div>
+            </header>
+            <div v-for="(req, i) in editStep2.requirements" :key="'rq-' + i" class="row row--tight">
+              <span class="row__idx">{{ i + 1 }}</span>
+              <el-input v-model="editStep2.requirements[i]" size="small" :disabled="readOnly" />
+              <el-button v-if="!readOnly" size="small" type="danger" plain @click="removeArrayItem(editStep2.requirements, i)">删除</el-button>
+            </div>
+          </section>
+
+          <section class="section">
+            <header class="section__head">
+              <h4>位置选择提示模板</h4>
+              <el-button size="small" type="primary" :disabled="readOnly" @click="saveField('step2.location_selection_prompt', editStep2.location_selection_prompt)">保存</el-button>
+            </header>
+            <el-input v-model="editStep2.location_selection_prompt" type="textarea" :rows="3" :disabled="readOnly" />
+          </section>
+
+          <section class="section">
+            <header class="section__head">
+              <h4>位置选择要求 · {{ editStep2.location_requirements.length }} 条</h4>
+              <div class="section__tools">
+                <el-button size="small" v-if="!readOnly" @click="editStep2.location_requirements.push('')">添加</el-button>
+                <el-button size="small" type="primary" v-if="!readOnly" @click="saveField('step2.location_requirements', editStep2.location_requirements)">保存全部</el-button>
+              </div>
+            </header>
+            <div v-for="(lr, i) in editStep2.location_requirements" :key="'lr-' + i" class="row row--tight">
+              <span class="row__idx">{{ i + 1 }}</span>
+              <el-input v-model="editStep2.location_requirements[i]" size="small" :disabled="readOnly" />
+              <el-button v-if="!readOnly" size="small" type="danger" plain @click="removeArrayItem(editStep2.location_requirements, i)">删除</el-button>
+            </div>
+          </section>
+        </div>
+
+        <!-- JSON -->
+        <div v-show="activeTab === 'json'" class="anim-fade-up">
+          <div class="json-bar">
             <el-button size="small" type="primary" @click="copyJson">复制 JSON</el-button>
-            <span style="color:#909399;font-size:13px">只读预览，反映当前页面编辑内容</span>
+            <span class="card-head__hint">只读预览，反映当前页面编辑内容</span>
           </div>
-          <pre style="background:#f5f7fa;padding:16px;border-radius:4px;max-height:600px;overflow:auto;font-size:13px;line-height:1.6">{{ jsonPreview }}</pre>
-        </el-tab-pane>
-      </el-tabs>
+          <pre class="json-view">{{ jsonPreview }}</pre>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -193,6 +197,12 @@ const promptsData = ref({})
 const newRuleText = ref('')
 const newTaskKey = ref('')
 const newTaskValue = ref('')
+
+const tabs = [
+  { key: 'step1', label: 'Step1 · 类别选取' },
+  { key: 'step2', label: 'Step2 · 关键词匹配' },
+  { key: 'json', label: 'JSON 原始数据' }
+]
 
 const editStep1 = reactive({
   system_role: '',
@@ -239,14 +249,15 @@ function toggleEdit() {
 }
 
 function syncFromData(data) {
-  promptsData.value = data
-  const s1 = data.step1 || {}
+  const src = data || {}
+  promptsData.value = src
+  const s1 = src.step1 || {}
   editStep1.system_role = s1.system_role || ''
   editStep1.thinking_steps = [...(s1.thinking_steps || [])]
   editStep1.tasks = { ...(s1.tasks || {}) }
   editStep1.notes = [...(s1.notes || [])]
 
-  const s2 = data.step2 || {}
+  const s2 = src.step2 || {}
   editStep2.system_role = s2.system_role || ''
   editStep2.thinking_step1_description = s2.thinking_step1_description || ''
   editStep2.thinking_step2_description = s2.thinking_step2_description || ''
@@ -272,6 +283,8 @@ async function reloadPrompts() {
   reloading.value = true
   try {
     await api.reloadPrompts()
+    // 重载后回读最新配置，避免页面停留在旧内容
+    await refreshAll()
     ElMessage.success('提示词配置已热重载，运行中的服务已生效')
   } catch (e) {
     ElMessage.error('重载失败: ' + (e.message || e))
@@ -283,8 +296,8 @@ async function reloadPrompts() {
 async function saveField(path, value) {
   try {
     await api.updatePromptField(path, value)
-    ElMessage.success(`"${path}" 已保存并持久化`)
-    ElMessage.info('记得点击「热重载」使更改生效', 2000)
+    ElMessage.success(`「${path}」已保存`)
+    ElMessage.info('点击「热重载」后生效', 2000)
   } catch (e) {
     ElMessage.error('保存失败: ' + (e.message || e))
   }
@@ -293,8 +306,8 @@ async function saveField(path, value) {
 async function saveTask(key, value) {
   try {
     await api.updateStep1Task(key, value)
-    ElMessage.success(`任务 "${key}" 已保存`)
-    ElMessage.info('记得点击「热重载」使更改生效', 2000)
+    ElMessage.success(`任务「${key}」已保存`)
+    ElMessage.info('点击「热重载」后生效', 2000)
   } catch (e) {
     ElMessage.error('保存失败: ' + (e.message || e))
   }
@@ -382,5 +395,114 @@ onMounted(() => {
 </script>
 
 <style scoped>
-h2 { color: #303133; }
+.pm-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pm-head__actions { display: flex; gap: 8px; }
+
+.loading-box {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 56px;
+  color: var(--ink-500);
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 18px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.tab {
+  position: relative;
+  padding: 8px 14px 12px;
+  border: 0;
+  background: none;
+  color: var(--ink-500);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.18s var(--ease);
+}
+.tab:hover { color: var(--ink-800); }
+.tab.is-active { color: var(--brand); font-weight: 600; }
+.tab.is-active::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--brand);
+}
+
+.pm-body { display: grid; gap: 26px; }
+
+.section { display: grid; gap: 10px; }
+.section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.section__head h4 { font-size: 13.5px; color: var(--ink-900); }
+.section__tools { display: flex; gap: 8px; }
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.row--tight { align-items: center; }
+.row--new { margin-top: 4px; }
+.row__idx {
+  flex: none;
+  min-width: 34px;
+  padding-top: 6px;
+  color: var(--ink-400);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: right;
+}
+.row__idx--new { color: var(--ok); }
+.row__key {
+  flex: none;
+  min-width: 72px;
+  padding-top: 6px;
+  color: var(--brand);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.row--tight .row__idx, .row--tight .row__key { padding-top: 0; }
+.row__newkey { max-width: 150px; flex: none; }
+.row__ops { display: flex; flex-direction: column; gap: 6px; flex: none; }
+.row :deep(.el-textarea), .row :deep(.el-input) { flex: 1; }
+.row__ops :deep(.el-button) { margin-left: 0 !important; }
+
+.json-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.json-view {
+  max-height: 560px;
+  overflow: auto;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-md);
+  background: #fafbfd;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--ink-700);
+}
 </style>
